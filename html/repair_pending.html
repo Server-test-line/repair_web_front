@@ -18,9 +18,9 @@
     </div>
     <div class="nav-right">
         <a href="home.html" class="nav-link">首頁</a>
-        <a href="repair_checking.html" class="nav-link">報修</a>
-        <a href="repair_pending.html" class="nav-link">報修查詢</a>
-        <a href="repair_done.html" class="nav-link">報修紀錄</a>
+        <a href="repair_pending.html" class="nav-link">報修</a>
+        <a href="repair_checking.html" class="nav-link">報修查詢</a>
+        <a href="repair_done.html" class="nav-link">維修歷史紀錄</a>
         <a href="history.html" class="nav-link">購買歷史</a>
         <a href="info.html" class="nav-link">會員資料</a>
         <a href="index.html" class="nav-link">登出</a>
@@ -31,9 +31,9 @@
         <div id="overlay1" class="menu-overlay">
           <div id="mobile-dropdown" class="mobile-dropdown">
               <a href="home.html">首頁</a>
-              <a href="repair_checking.html">報修</a>
-              <a href="repair_pending.html">報修查詢</a>
-              <a href="repair_done.html">報修紀錄</a>
+              <a href="repair_pending.html">報修</a>
+              <a href="repair_checking.html">報修查詢</a>
+              <a href="repair_done.html">維修歷史紀錄</a>
               <a href="history.html">購買歷史</a>
               <a href="info.html">會員資料</a>
               <a href="index.html">登出</a>
@@ -60,8 +60,8 @@
         <label for="product-id">產品名稱：產品序號</label>
         <select id="product-id" name="product-id" required>
           <option value="">請選擇</option>
-          <option value="氣爆鍋-001">飛騰氣爆鍋：FT001</option>
-          <option value="電鍋-002">智慧電鍋：FT002</option>
+          <option value="氣爆鍋-001">飛騰鍋：FT001</option>
+          <option value="電鍋-002">智慧鍋：FT002</option>
         </select>
       </div>
 
@@ -69,13 +69,15 @@
         <label for="repair-method">報修方式：</label>
         <select id="repair-method" name="repair-method" onchange="toggleRepairMethod()" required>
           <option value="">請選擇</option>
-          <option value="phone">電話聯絡</option>
+          <option value="phone">電話報修</option>
+          <option value="app">APP報修</option>
+          <option value="line">Line報修</option>
           <option value="self">自行報修</option>
         </select>
       </div>
 
       <div class="form-group hidden" id="callContentGroup">
-        <label for="call-content">電話聯絡內容：</label>
+        <label for="call-content">報修聯絡內容：</label>
         <textarea id="call-content" name="call-content" rows="8" cols="80" placeholder="請輸入聯絡內容"></textarea>
       </div>
 

@@ -1,0 +1,53 @@
+/* staff_style.css - 員工管理專用樣式 */
+
+.search-panel {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #014027;
+  border: 2px solid #cba96d;
+  border-radius: 10px;
+  color: #ebd7b5;
+}
+
+.search-panel .form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.search-panel label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #ebd7b5;
+}
+
+.search-panel input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #ffff;
+  color: #ebd7b5;
+  border: 2px solid #cba96d;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.result-box {
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: #012215;
+  border: 2px solid #cba96d;
+  border-radius: 10px;
+  color: #ebd7b5;
+  padding: 20px;
+}
+
+.result-box p {
+  margin: 8px 0;
+}

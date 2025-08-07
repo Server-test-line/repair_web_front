@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 員工管理</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="staff_style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="container">
+    <h2 class="page-title">員工管理系統</h2>
+
+    <div class="search-panel">
+      <div class="form-group">
+        <label for="name">顧客姓名：</label>
+        <input type="text" id="name" placeholder="可留空" />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">電話號碼：</label>
+        <input type="text" id="phone" placeholder="可留空" />
+      </div>
+
+      <div class="form-group">
+        <label for="repairId">報修單號：</label>
+        <input type="text" id="repairId" placeholder="可留空" />
+      </div>
+
+      <div class="form-group">
+        <label>日期區間：</label>
+        <input type="date" id="startDate" /> ~
+        <input type="date" id="endDate" />
+      </div>
+
+      <div class="btn-group">
+        <button class="submit-button" onclick="search()">查詢</button>
+        <a href="index.html" class="submit-button">回登入頁</a>
+      </div>
+    </div>
+
+    <div class="result-box" id="result" style="display: none;">
+      <h3>查詢結果：</h3>
+      <p>報修單號：FT20250807001</p>
+      <p>顧客姓名：王小明</p>
+      <p>電話號碼：0912345678</p>
+      <p>報修產品：鍋</p>
+      <p>報修日期：2025/08/05</p>
+      <p>目前狀態：檢測中</p>
+    </div>
+  </div>
+
+  <script>
+    function search() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const repairId = document.getElementById("repairId").value.trim();
+      const start = document.getElementById("startDate").value;
+      const end = document.getElementById("endDate").value;
+
+      if (name || phone || repairId || (start && end)) {
+        document.getElementById("result").style.display = "block";
+      } else {
+        alert("請輸入至少一個查詢條件！");
+      }
+    }
+  </script>
+</body>
+</html>

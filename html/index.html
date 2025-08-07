@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>飛騰家電 - 會員登入</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 會員登入</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-    <div class="container">
-        <img src="logo1.png" alt="飛騰家電logo" class="logo">
-        <div class="login-tabs">
-            <button class="tab-button" data-target="member-form">會員登入</button>
-            <button class="tab-button" data-target="staff-form">員工登入</button>
-        </div>
-        <form onsubmit="return redirectToHome()" class="login-form" id="login-form">
-            <div class="form-group">
-                <label for="phone">帳號：</label>
-                <input type="text" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <label for="password">密碼：</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="submit-button">確認</button>
-            <a href="change_password.html" class="submit-button">忘記密碼</a>
-            <a href="register.html" class="submit-button">註冊新帳號</a>
-        </form>
+  <div class="container">
+    <img src="logo1.png" alt="飛騰家電logo" class="logo" />
+
+    <div class="login-tabs">
+      <button class="tab-button active" id="member-tab">會員登入</button>
+      <button class="tab-button inactive" id="staff-tab">員工登入</button>
     </div>
 
-    <script>
-        function redirectToHome() {
-            window.location.href = "home.html";
-            return false; 
-        }
-        // 切換 tab
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const accountLabel = document.getElementById('account-label');
-        const registerLink = document.getElementById('register-link');
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(b => {
-                b.classList.remove('active');
-                b.classList.add('inactive');
-                });
-                btn.classList.remove('inactive');
-                btn.classList.add('active');
-            });
-        });
-    </script>
+    <form id="login-form" class="login-form" onsubmit="return handleLogin()">
+      <div class="form-group">
+        <label for="account">帳號：</label>
+        <input type="text" id="account" name="account" required />
+      </div>
+      <div class="form-group">
+        <label for="password">密碼：</label>
+        <input type="password" id="password" name="password" required />
+      </div>
 
-    <script>
-        const toggleButton = document.getElementById('menu-toggle');
-        const dropdown = document.getElementById('mobile-dropdown');
+      <button type="submit" class="submit-button">確認</button>
+      <a href="change_password.html" class="submit-button">忘記密碼</a>
+      <a href="register.html" class="submit-button" id="register-button">註冊新帳號</a>
+    </form>
+  </div>
 
-        toggleButton.addEventListener('click', () => {
-        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-        });
-    </script>
+  <script>
+    let currentMode = "member"; // 預設為會員登入
+
+    const memberTab = document.getElementById("member-tab");
+    const staffTab = document.getElementById("staff-tab");
+    const registerBtn = document.getElementById("register-button");
+
+    memberTab.addEventListener("click", () => {
+      currentMode = "member";
+      memberTab.classList.add("active");
+      memberTab.classList.remove("inactive");
+      staffTab.classList.add("inactive");
+      staffTab.classList.remove("active");
+      registerBtn.style.display = "block";
+    });
+
+    staffTab.addEventListener("click", () => {
+      currentMode = "staff";
+      staffTab.classList.add("active");
+      staffTab.classList.remove("inactive");
+      memberTab.classList.add("inactive");
+      memberTab.classList.remove("active");
+      registerBtn.style.display = "none";
+    });
+
+    function handleLogin() {
+      if (currentMode === "member") {
+        window.location.href = "home.html";
+      } else {
+        window.location.href = "staff_home.html"; // 你等一下要新增這個頁面
+      }
+      return false; // 防止實際送出
+    }
+  </script>
 </body>
 </html>

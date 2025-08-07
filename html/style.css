@@ -10,8 +10,8 @@ html, body {
   width: 100vw;
   overflow-x: hidden;
   font-family: "微軟正黑體", sans-serif;
-  background-color: #4a0d0d;
-  color: #ffffff;
+  background-color: #012215; /* 深綠背景 */
+  color: #ebd7b5;
   text-align: center;
 }
 
@@ -23,7 +23,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  background-color: rgb(2, 57, 2);
+  background-color: #014027; /* 深綠背景 */
 }
 
 .nav-left, .nav-right {
@@ -39,25 +39,26 @@ html, body {
 
 .navbar .username {
   font-size: 18px;
-  color: white;
+  color: #ebd7b5;
   line-height: 1;
 }
 
 .nav-link {
-  color: white;
+  color: #cba96d;
   text-decoration: none;
   font-size: 18px;
 }
 
 .nav-link:hover {
   text-decoration: underline;
+  color: #ebd7b5;
 }
 
 /* === 頁面標題 === */
 .page-title {
   font-size: 60px;
   margin-top: 40px;
-  color: #f8d886;
+  color: #cba96d;
 }
 
 /* === 卡片容器 === */
@@ -93,9 +94,9 @@ html, body {
   font-weight: bold;
   text-decoration: none;
   border-radius: 10px;
-  background-color: #173f1c;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  background-color: #014027;
+  color: #ebd7b5;
+  border: 2px solid #cba96d;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -106,7 +107,7 @@ html, body {
 
 .big-card.query,
 .big-card.repair {
-  border: 3px solid #c59771;
+  border: 2px solid #cba96d;
 }
 
 /* === 登入頁 === */
@@ -120,18 +121,17 @@ html, body {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 380px; 
+  max-width: 380px;
   margin: 0 auto 20px;
-  border-bottom: 1px solid #ccc; 
+  border-bottom: 1px solid #ebd7b5;
 }
-
 
 .tab-button {
   flex: 1;
   padding: 10px 0;
   font-size: 20px;
   background-color: transparent;
-  color: #fff;
+  color: #cba96d;
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
@@ -139,12 +139,12 @@ html, body {
 }
 
 .tab-button:hover {
-  background-color: #c59771;
+  background-color: #1b4f3a;
 }
 
 .tab-button.active {
-  color: #e4c984; 
-  border-bottom: 2px solid #f4dda3;
+  color: #f3d28c;
+  border-bottom: 2px solid #cba96d;
 }
 
 .tab-button.inactive {
@@ -153,11 +153,11 @@ html, body {
 }
 
 .form-section {
-    display: none;
+  display: none;
 }
 
 .form-section.active {
-    display: block;
+  display: block;
 }
 
 .login-form {
@@ -174,7 +174,7 @@ html, body {
 .container {
   margin-top: 60px;
   margin-bottom: 60px;
-  padding: 0 16px; /* 手機左右留白 */
+  padding: 0 16px;
 }
 
 .form-group {
@@ -186,7 +186,7 @@ html, body {
   font-size: 20px;
   margin-bottom: 8px;
   text-align: left;
-  color: #fff;
+  color: #ebd7b5;
 }
 
 .form-group input {
@@ -195,6 +195,8 @@ html, body {
   padding: 10px;
   border-radius: 6px;
   border: none;
+  background-color: #ffff;
+  color: #000;
 }
 
 /* === 按鈕 === */
@@ -202,15 +204,18 @@ html, body {
   width: 100%;
   padding: 10px;
   font-size: 18px;
-  background-color: #c59771;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+  background-color: #014027;
+  color: #cba96d;
+  border: 2px solid #cba96d;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .submit-button:hover {
-  background-color: #a77a56;
+  background-color: #cba96d;
+  color: #014027;
 }
 
 /* === 報修頁 === */
@@ -235,7 +240,8 @@ html, body {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   font-size: 18px;
   padding: 10px;
@@ -249,15 +255,15 @@ html, body {
 }
 
 .info-box {
-  background-color: #ac8a6e;
-  border: 2px solid #a77a56;
+  background-color: #014027;
+  border: 2px solid #cba96d;
   border-radius: 10px;
   padding: 25px 40px;
   margin: 20px;
-  width: 500px; 
+  width: 500px;
   text-align: left;
   font-size: 20px;
-  color: #fff;
+  color: #ebd7b5;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -266,37 +272,36 @@ html, body {
 
 /* === 細節框框 === */
 .record-grid {
-  display: flex; /* 改用 flex 而非 grid */
+  display: flex;
   justify-content: center;
-  gap: 10px; /* 卡片間距，可微調 */
+  gap: 10px;
   flex-wrap: wrap;
   padding: 20px;
 }
 
 .note {
-  color: #ddd;
+  color: #f4e2ba;
   font-size: 16px;
   margin-top: 10px;
 }
 
 .back-button {
-  color: #f8d886;
+  color: #cba96d;
   font-size: 18px;
   display: inline-block;
   margin-top: 20px;
 }
 
-/* 手機選單預設隱藏 */
+/* === 手機選單預設隱藏 === */
 .mobile-menu {
   display: none;
   position: relative;
-  margin-left: auto; /* 🔥 讓按鈕靠右 */
+  margin-left: auto;
 }
 
-/* 按鈕靠右邊上方 */
 #menu-toggle {
-  background-color: #024000;
-  color: white;
+  background-color: #014027;
+  color: #ebd7b5;
   border: none;
   padding: 10px 14px;
   font-size: 20px;
@@ -304,16 +309,15 @@ html, body {
   cursor: pointer;
 }
 
-/* 🔥 選單從右上角展開，靠右對齊 */
 .mobile-dropdown {
   display: flex;
   flex-direction: column;
   position: fixed;
   top: 0;
-  right: -250px; /* ✅ 一開始隱藏在右側外面 */
+  right: -250px;
   width: 250px;
   height: 100%;
-  background-color: #024000;
+  background-color: #014027;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   transition: right 0.3s ease;
@@ -325,16 +329,16 @@ html, body {
 }
 
 .mobile-dropdown.active {
-  right: 0; /* ✅ 顯示選單時滑進來 */
+  right: 0;
   transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
 }
 
 .mobile-dropdown a {
-  color: white;
+  color: #cba96d;
   font-size: 18px;
-  padding: 14px 20px; /* 這裡 20px 即對齊 navbar 的左右 padding */
+  padding: 14px 20px;
   text-decoration: none;
   display: block;
   text-align: left;
@@ -342,7 +346,7 @@ html, body {
 }
 
 .mobile-dropdown a:hover {
-  background-color: #024000;
+  background-color: #1b4f3a;
 }
 
 .menu-overlay {
@@ -351,7 +355,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: transparent; /* 透明遮罩 */
+  background: transparent;
   z-index: 900;
   display: none;
 }
