@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 報修紀錄（已完成）</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="record_detail.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="logo1.png" alt="飛騰家電logo" class="logo" />
+      <span class="username">歡迎，會員名字</span>
+    </div>
+    <div class="nav-right">
+        <a href="home.html" class="nav-link">首頁</a>
+        <a href="repair_checking.html" class="nav-link">報修</a>
+        <a href="repair_pending.html" class="nav-link">報修查詢</a>
+        <a href="repair_done.html" class="nav-link">報修紀錄</a>
+        <a href="history.html" class="nav-link">購買歷史</a>
+        <a href="info.html" class="nav-link">會員資料</a>
+        <a href="index.html" class="nav-link">登出</a>
+    </div>
+    <!-- 手機版的選單 -->
+    <div class="mobile-menu">
+        <button id="menu-toggle">☰</button>
+        <div id="overlay1" class="menu-overlay">
+          <div id="mobile-dropdown" class="mobile-dropdown">
+              <a href="home.html">首頁</a>
+              <a href="repair_checking.html">報修</a>
+              <a href="repair_pending.html">報修查詢</a>
+              <a href="repair_done.html">報修紀錄</a>
+              <a href="history.html">購買歷史</a>
+              <a href="info.html">會員資料</a>
+              <a href="index.html">登出</a>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="page-title">報修紀錄（已完成）</div>
+
+  <div class="query-content">
+    <p>以下是您過去的報修記錄：</p>
+    
+    <div class="record-grid">
+      <div class="info-box">
+        <p>維修單號：</p>
+        <p>產品序號：</p>
+        <p>報修日期：</p>
+        <button class="show-detail">查看所有內容</button>
+      </div>
+      <div class="info-box">
+        <p>維修單號：</p>
+        <p>產品序號：</p>
+        <p>報修日期：</p>
+        <button class="show-detail">查看所有內容</button>
+      </div>
+    </div>
+
+    <p class="note">（資料由後端 API 提供）</p>
+    <a href="home.html" class="back-button">← 回首頁</a>
+  </div>
+  
+  <div class="detail-overlay" id="overlay"></div>
+    <div class="detail-modal" id="detailModal">
+      <button class="close-icon" id="close-detail">✖</button>
+      <h3>詳細報修內容</h3>
+      <p>維修單號：</p>
+      <p>報修日期：</p>
+      <p>產品序號：</p>
+      <p>產品名稱：</p>
+      <p>送修方式：</p>
+      <p>收件地址：</p>
+      <p>維修結果：</p>
+    </div>
+
+  <script>
+    // 手機選單按鈕
+    const toggleButton = document.getElementById('menu-toggle');
+    const dropdown = document.getElementById('mobile-dropdown');
+    const overlay1 = document.getElementById('overlay1');
+    
+    toggleButton.addEventListener('click', () => {
+      dropdown.classList.toggle('active'); // 切換右側選單
+      overlay1.classList.toggle('active');
+    });
+
+    // 詳細內容 Modal（彈窗）
+    const detailBtns = document.querySelectorAll('.show-detail');
+    const overlay = document.querySelector('.detail-overlay');
+    const modal = document.querySelector('.detail-modal');
+    const closeBtn = document.getElementById('close-detail');
+
+    detailBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        overlay.classList.add('active');
+        modal.classList.add('active');
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
+    });
+
+    overlay1.addEventListener('click', (event) => {
+      // 只有點擊到 overlay 背景（而非選單本身）才觸發關閉
+      if (event.target === overlay1) {
+        dropdown.classList.remove('active');
+        overlay1.classList.remove('active');
+      }
+    });
+
+    overlay.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
+    });
+</script>
+
+</body>
+</html>

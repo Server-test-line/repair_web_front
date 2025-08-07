@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 報修</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .form-group { margin-bottom: 15px; }
+    .hidden { display: none; }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="logo1.png" alt="飛騰家電logo" class="logo" />
+      <span class="username">歡迎，會員名字</span>
+    </div>
+    <div class="nav-right">
+        <a href="home.html" class="nav-link">首頁</a>
+        <a href="repair_checking.html" class="nav-link">報修</a>
+        <a href="repair_pending.html" class="nav-link">報修查詢</a>
+        <a href="repair_done.html" class="nav-link">報修紀錄</a>
+        <a href="history.html" class="nav-link">購買歷史</a>
+        <a href="info.html" class="nav-link">會員資料</a>
+        <a href="index.html" class="nav-link">登出</a>
+    </div>
+    <!-- 手機版的選單 -->
+    <div class="mobile-menu">
+        <button id="menu-toggle">☰</button>
+        <div id="overlay1" class="menu-overlay">
+          <div id="mobile-dropdown" class="mobile-dropdown">
+              <a href="home.html">首頁</a>
+              <a href="repair_checking.html">報修</a>
+              <a href="repair_pending.html">報修查詢</a>
+              <a href="repair_done.html">報修紀錄</a>
+              <a href="history.html">購買歷史</a>
+              <a href="info.html">會員資料</a>
+              <a href="index.html">登出</a>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="page-title">產品報修</div>
+
+  <div class="repair-form">
+    <form onsubmit="return confirmSubmit()">
+      <div class="form-group">
+        <label for="username">客戶姓名：</label>
+        <input type="text" id="username" name="username" value="王小明" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">客戶電話：</label>
+        <input type="text" id="phone" name="phone" value="0912345678" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="product-id">產品名稱：產品序號</label>
+        <select id="product-id" name="product-id" required>
+          <option value="">請選擇</option>
+          <option value="氣爆鍋-001">飛騰氣爆鍋：FT001</option>
+          <option value="電鍋-002">智慧電鍋：FT002</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="repair-method">報修方式：</label>
+        <select id="repair-method" name="repair-method" onchange="toggleRepairMethod()" required>
+          <option value="">請選擇</option>
+          <option value="phone">電話聯絡</option>
+          <option value="self">自行報修</option>
+        </select>
+      </div>
+
+      <div class="form-group hidden" id="callContentGroup">
+        <label for="call-content">電話聯絡內容：</label>
+        <textarea id="call-content" name="call-content" rows="8" cols="80" placeholder="請輸入聯絡內容"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="delivery-method">送修方式：</label>
+        <select id="delivery-method" name="delivery-method" onchange="toggleDeliveryMethod()" required>
+          <option value="">請選擇</option>
+          <option value="self">自行送修</option>
+          <option value="home">到府收貨</option>
+        </select>
+      </div>
+
+      <div class="form-group hidden" id="homeAddressGroup">
+        <label for="home-address">收件地址：</label>
+        <input type="text" id="home-address" name="home-address" placeholder="請輸入您的收件地址">
+      </div>
+
+      <div class="form-group hidden" id="companyAddressGroup">
+        <p>請將產品送致：</p>
+        <p>103 臺北市大同區承德路三段285號一樓</p>
+      </div>
+
+      <div class="form-group">
+        <label for="description">故障描述：</label>
+        <textarea id="description" name="description" rows="8" cols="80" placeholder="請簡述產品目前的異常情況..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-button">確認報修</button>
+    </form>
+    <p class="note">如有問題請撥打電話：(02)2838 1010</p>
+    <a href="home.html" class="back-button">← 回首頁</a>
+  </div>
+
+  <script>
+    function toggleRepairMethod() {
+      const method = document.getElementById("repair-method").value;
+      const callContent = document.getElementById("callContentGroup");
+      callContent.classList.toggle("hidden", method !== "phone");
+    }
+    function toggleDeliveryMethod() {
+        const method = document.getElementById("delivery-method").value;
+        document.getElementById("homeAddressGroup").classList.toggle("hidden", method !== "home");
+        document.getElementById("companyAddressGroup").classList.toggle("hidden", method !== "self");
+    }
+
+    function confirmSubmit() {
+      alert("報修資料已送出！（模擬功能）");
+      return false; // 防止實際送出
+    }
+  </script>
+
+  <script>
+    const toggleButton = document.getElementById('menu-toggle');
+    const dropdown = document.getElementById('mobile-dropdown');
+    const overlay1 = document.getElementById('overlay1');
+    
+    toggleButton.addEventListener('click', () => {
+      dropdown.classList.toggle('active'); // 切換右側選單
+      overlay1.classList.toggle('active');
+    });
+
+    overlay1.addEventListener('click', () => {
+      dropdown.classList.remove('active');
+      overlay1.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>
