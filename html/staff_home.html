@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="staff_style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    input.is-invalid { border-color: #d33 !important; box-shadow: 0 0 0 2px rgba(221,51,51,.12); }
+    .inline-btn { margin-left: 6px; font-size: 12px; cursor: pointer; text-decoration: underline; background: none; border: 0; color: inherit; }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -29,8 +33,11 @@
 
       <div class="form-group">
         <label>日期區間：</label>
-        <input type="date" id="startDate" /> ~
+        <input type="date" id="startDate" />
+        <button type="button" class="inline-btn" id="startToggle">手動輸入</button>
+        ~
         <input type="date" id="endDate" />
+        <button type="button" class="inline-btn" id="endToggle">手動輸入</button>
       </div>
 
       <div class="btn-group">
@@ -51,12 +58,119 @@
   </div>
 
   <script>
+    //切換 date/text
+    function toggleDateInput(id, toggleBtnId) {
+      const el = document.getElementById(id);
+      const btn = document.getElementById(toggleBtnId);
+
+      btn.addEventListener('click', () => {
+        if (el.type === 'date') {
+          // 切到可打字
+          const current = el.value;
+          el.type = 'text';
+          el.placeholder = 'YYYY-MM-DD 或 2025/8/3';
+          el.inputMode = 'numeric';
+          el.value = current;
+          btn.textContent = '選日曆';
+        } else {
+          // 從打字切回日曆：嘗試把打字內容標準化再回填
+          const normalized = normalizeDateLike(el.value);
+          if (normalized) el.value = normalized;
+          el.classList.remove('is-invalid');
+          el.type = 'date';
+          el.removeAttribute('placeholder');
+          el.removeAttribute('inputmode');
+          btn.textContent = '手動輸入';
+        }
+      });
+
+      //嘗試自動轉 YYYY-MM-DD
+      el.addEventListener('blur', () => {
+        if (el.type === 'text' && el.value) {
+          const iso = normalizeDateLike(el.value);
+          if (iso) {
+            el.value = iso;
+            el.classList.remove('is-invalid');
+          } else {
+            el.classList.add('is-invalid');
+          }
+        }
+      });
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && el.type === 'text') {
+          const iso = normalizeDateLike(el.value);
+          if (iso) {
+            el.value = iso;
+            el.classList.remove('is-invalid');
+          } else {
+            el.classList.add('is-invalid');
+          }
+        }
+      });
+      el.addEventListener('input', () => el.classList.remove('is-invalid'));
+    }
+
+    function normalizeDateLike(input) {
+      if (!input) return '';
+      const s = String(input).trim().replace(/\./g, '/');
+      //YYYY-MM-DD / YYYY/MM/DD
+      let m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+      if (m) return toISO(+m[1], +m[2], +m[3]);
+      //YYYYMMDD
+      m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (m) return toISO(+m[1], +m[2], +m[3]);
+      //M/D/YYYY 或 MM-DD-YYYY
+      m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+      if (m) return toISO(+m[3], +m[1], +m[2]);
+      //Date 解析
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) return toISO(d.getFullYear(), d.getMonth() + 1, d.getDate());
+      return '';
+    }
+
+    function toISO(y, m, d) {
+      const dt = new Date(y, m - 1, d);
+      if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return '';
+      return `${y.toString().padStart(4, '0')}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    }
+
+    // 綁定兩個日期欄位的切換
+    toggleDateInput('startDate', 'startToggle');
+    toggleDateInput('endDate', 'endToggle');
+
     function search() {
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const repairId = document.getElementById("repairId").value.trim();
-      const start = document.getElementById("startDate").value;
-      const end = document.getElementById("endDate").value;
+
+      const startEl = document.getElementById("startDate");
+      const endEl = document.getElementById("endDate");
+
+      // 若目前在 text 模式，先嘗試把值轉成 YYYY-MM-DD 後再判斷
+      if (startEl.type === 'text' && startEl.value) {
+        const iso = normalizeDateLike(startEl.value);
+        if (iso) startEl.value = iso;
+      }
+      if (endEl.type === 'text' && endEl.value) {
+        const iso = normalizeDateLike(endEl.value);
+        if (iso) endEl.value = iso;
+      }
+
+      const start = startEl.value;
+      const end = endEl.value;
+
+      if ((start && !end) || (!start && end)) {
+        alert("請同時填寫起始與結束日期，或兩者皆留空。");
+        return;
+      }
+      if (start && end) {
+        const sd = new Date(start);
+        const ed = new Date(end);
+        if (sd > ed) {
+          alert("起始日期不可晚於結束日期。");
+          return;
+        }
+      }
 
       if (name || phone || repairId || (start && end)) {
         document.getElementById("result").style.display = "block";
