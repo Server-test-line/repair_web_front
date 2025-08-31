@@ -2,8 +2,10 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>飛騰家電 - 報修查詢</title>
+  <title>飛騰家電 - 報修進度查詢</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="staff_style.css">
+  <link rel="stylesheet" href="record_detail.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -46,22 +48,58 @@
     <div class="record-grid">
       <!-- 第一組報修資料 -->
       <div class="info-box">
-        <p>商品名稱：飛騰氣炸鍋</p>
+        <!-- 狀態進度條 -->
+        <div class="status-progress">
+          <div class="status-step">
+            <div class="status-circle completed">1</div>
+            <div class="status-label completed">報價</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle active">2</div>
+            <div class="status-label active">檢測中</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle">3</div>
+            <div class="status-label">已安排物流收貨</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle">✓</div>
+            <div class="status-label">已完成報修</div>
+          </div>
+        </div>
+        
+        <p>報修產品名稱：飛騰氣炸鍋</p>
+        <p>報修產品序號：123456789</p>
         <p>報修單號：FT20240623001</p>
-        <p>報修狀態：檢測中</p>
-        <p>會員姓名：徐子涵</p>
-        <p>會員電話：0908828081</p>
-        <p>送修日期：2025/06/20</p>
+        <button class="show-detail">查看所有內容</button>
       </div>
 
       <!-- 第二組報修資料 -->
       <div class="info-box">
-        <p>商品名稱：飛騰智能電鍋</p>
+        <!-- 狀態進度條 -->
+        <div class="status-progress">
+          <div class="status-step">
+            <div class="status-circle completed">1</div>
+            <div class="status-label completed">報價</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle completed">2</div>
+            <div class="status-label completed">檢測中</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle active">3</div>
+            <div class="status-label active">已安排物流收貨</div>
+          </div>
+          <div class="status-step">
+            <div class="status-circle">✓</div>
+            <div class="status-label">已完成報修</div>
+          </div>
+        </div>
+        
+        <p>報修產品名稱：飛騰智能電鍋</p>
+        <p>報修產品序號：1234567</p>
         <p>報修單號：FT20240622002</p>
-        <p>報修狀態：等待零件</p>
-        <p>會員姓名：徐子涵</p>
-        <p>會員電話：0908828081</p>
-        <p>送修日期：2025/06/18</p>
+        <button class="show-detail">查看所有內容</button>
       </div>
     </div>
 
@@ -69,7 +107,24 @@
     <a href="home.html" class="back-button">← 回首頁</a>
   </div>
   
+  <!-- 詳細內容 Modal -->
+  <div class="detail-overlay" id="overlay"></div>
+  <div class="detail-modal" id="detailModal">
+    <button class="close-icon" id="close-detail">✖</button>
+    <h3>詳細報修內容</h3>
+    <p>報修產品名稱：飛騰氣炸鍋</p>
+    <p>報修產品序號：123456789</p>
+    <p>報修單號：FT20240623001</p>
+    <p>報修狀態：檢測中</p>
+    <p>客戶姓名：徐子涵</p>
+    <p>客戶電話：0908828081</p>
+    <p>送修日期：2025/06/20</p>
+    <p>維修方式：LINE聯絡</p>
+    <p>送修方式：到府收件</p>
+  </div>
+  
   <script>
+    // 手機選單按鈕
     const toggleButton = document.getElementById('menu-toggle');
     const dropdown = document.getElementById('mobile-dropdown');
     const overlay1 = document.getElementById('overlay1');
@@ -85,6 +140,29 @@
         dropdown.classList.remove('active');
         overlay1.classList.remove('active');
       }
+    });
+
+    // 詳細內容 Modal（彈窗）
+    const detailBtns = document.querySelectorAll('.show-detail');
+    const overlay = document.querySelector('.detail-overlay');
+    const modal = document.querySelector('.detail-modal');
+    const closeBtn = document.getElementById('close-detail');
+
+    detailBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        overlay.classList.add('active');
+        modal.classList.add('active');
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
     });
   </script>
 </body>
