@@ -11,7 +11,10 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   z-index: 2000;
   max-width: 700px;
-  width: 95%;
+  min-width: 300px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
   display: none;
   line-height: 1.8;
   text-align: left;
@@ -78,20 +81,137 @@
   color: #014027;
 }
 
-/* RWD */
+/* RWD - 響應式設計 */
+
+/* 大型螢幕 (桌機) */
+@media (min-width: 1200px) {
+  .detail-modal {
+    max-width: 800px;
+    font-size: 22px;
+    padding: 30px 50px;
+  }
+}
+
+/* 中型螢幕 (筆電/平板橫向) */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .detail-modal {
+    max-width: 650px;
+    font-size: 20px;
+    padding: 25px 40px;
+  }
+}
+
+/* 小型螢幕 (平板直向) */
+@media (max-width: 991px) and (min-width: 769px) {
+  .detail-modal {
+    max-width: 85%;
+    font-size: 18px;
+    padding: 20px 30px;
+    max-height: 85vh;
+  }
+  
+  .detail-modal input[type="date"],
+  .detail-modal input[type="number"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 5px;
+    display: block;
+  }
+}
+
+/* 手機螢幕 */
 @media (max-width: 768px) {
   .detail-modal {
-    max-width: 90%;
-    padding: 10px 20px;
-    font-size: 18px;
+    max-width: 95%;
+    width: 95%;
+    padding: 15px 20px;
+    font-size: 16px;
+    max-height: 90vh;
+    top: 5vh;
+    transform: translate(-50%, 0);
   }
 
   .detail-modal p {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .detail-modal h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
   }
 
   .show-detail {
-    font-size: 18px;
+    font-size: 16px;
     padding: 8px 14px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  /* 輸入框在手機上的調整 */
+  .detail-modal input[type="date"],
+  .detail-modal input[type="number"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 5px;
+    display: block;
+    font-size: 16px !important;
+    padding: 12px !important;
+  }
+  
+  /* 保存按鈕在手機上的調整 */
+  .detail-modal button[onclick="saveEditableFields()"] {
+    width: 100%;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    margin-top: 15px;
+  }
+}
+
+/* 滾動條樣式 - 符合網站配色 */
+.detail-modal::-webkit-scrollbar {
+  width: 12px;
+}
+
+.detail-modal::-webkit-scrollbar-track {
+  background: #003d22; /* 更深的綠色背景 */
+  border-radius: 6px;
+}
+
+.detail-modal::-webkit-scrollbar-thumb {
+  background: #cba96d; /* 金色滾動條 */
+  border-radius: 6px;
+  border: 2px solid #014027; /* 深綠邊框 */
+}
+
+.detail-modal::-webkit-scrollbar-thumb:hover {
+  background: #d4b876; /* 懸停時更亮的金色 */
+}
+
+/* Firefox 滾動條樣式 */
+.detail-modal {
+  scrollbar-width: thin;
+  scrollbar-color: #cba96d #003d22;
+}
+
+/* 極小螢幕 (小手機) */
+@media (max-width: 480px) {
+  .detail-modal {
+    max-width: 98%;
+    width: 98%;
+    padding: 10px 15px;
+    font-size: 14px;
+    max-height: 95vh;
+    top: 2.5vh;
+  }
+  
+  .close-icon {
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  /* 手機版滾動條更細一點 */
+  .detail-modal::-webkit-scrollbar {
+    width: 8px;
   }
 }
