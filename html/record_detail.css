@@ -6,7 +6,7 @@
   background: #014027; /* 深綠背景 */
   color: #ebd7b5;
   font-size: 20px;
-  padding: 25px 40px;
+  padding: 15px 40px 25px; /* 調整上方 padding */
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   z-index: 2000;
@@ -46,20 +46,32 @@
 
 /* 關閉按鈕 ✖ */
 .close-icon {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
+  position: sticky;
+  top: 0;
+  float: right;
+  margin-bottom: -40px; /* 向上偏移，不佔據正常文檔流空間 */
+  margin-right: -20px; /* 向右偏移到邊緣 */
+  background: #014027; /* 與 modal 背景相同 */
   border: none;
   color: #cba96d; /* 金色 X */
   font-size: 24px;
   font-weight: bold;
-  transition: transform 0.2s;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s;
   cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .close-icon:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
+  background-color: #cba96d;
+  color: #014027;
 }
 
 /* 查看詳細按鈕 */
@@ -88,7 +100,7 @@
   .detail-modal {
     max-width: 800px;
     font-size: 22px;
-    padding: 30px 50px;
+    padding: 15px 50px 35px;
   }
 }
 
@@ -97,7 +109,7 @@
   .detail-modal {
     max-width: 650px;
     font-size: 20px;
-    padding: 25px 40px;
+    padding: 15px 40px 25px;
   }
 }
 
@@ -106,7 +118,7 @@
   .detail-modal {
     max-width: 85%;
     font-size: 18px;
-    padding: 20px 30px;
+    padding: 15px 30px 25px;
     max-height: 85vh;
   }
   
@@ -124,7 +136,7 @@
   .detail-modal {
     max-width: 95%;
     width: 95%;
-    padding: 15px 20px;
+    padding: 10px 20px 25px;
     font-size: 16px;
     max-height: 90vh;
     top: 5vh;
@@ -198,7 +210,7 @@
   .detail-modal {
     max-width: 98%;
     width: 98%;
-    padding: 10px 15px;
+    padding: 10px 15px 20px;
     font-size: 14px;
     max-height: 95vh;
     top: 2.5vh;
@@ -206,8 +218,9 @@
   
   .close-icon {
     font-size: 20px;
-    top: 10px;
-    right: 10px;
+    width: 35px;
+    height: 35px;
+    margin-right: -15px;
   }
   
   /* 手機版滾動條更細一點 */
