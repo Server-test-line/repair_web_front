@@ -337,10 +337,10 @@
       return progressHTML;
     }
 
-    // 顯示查詢結果（按日期排序）
+    // 顯示查詢結果（按維修單號排序）
     function displaySearchResults(data) {
-      // 按報修日期排序（從新到舊）
-      const sortedData = data.sort((a, b) => new Date(b.repairDate) - new Date(a.repairDate));
+      // 按維修單號排序（從大到小）
+      const sortedData = data.sort((a, b) => b.repairId.localeCompare(a.repairId));
       
       const recordGrid = document.getElementById('recordGrid');
       recordGrid.innerHTML = ''; // 清空之前的結果
