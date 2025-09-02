@@ -52,16 +52,19 @@
 .status-progress {
   --circle-size: 65px;     /* 圓的大小 */
   --line-height: 5px;      /* 連接線高度 */
+  --scale-factor: 1.1;     /* 整體縮放比例 - 調整為稍大 */
   
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
   margin-bottom: 15px;     /* 減少與下方文字的距離 */
-  padding: 25px 30px 20px; /* 減少下方 padding */
+  padding: 25px 30px 35px; /* 增加下方 padding 給標籤更多空間 */
   background: #014027;
   border-radius: 15px;
   min-width: 0; /* 防止 flex 子項目被壓縮 */
+  transform: scale(var(--scale-factor)); /* 整體等比例放大 */
+  transform-origin: center; /* 從中心點縮放 */
 }
 
 /* 進度條背景線 */
@@ -123,13 +126,15 @@
 }
 
 .status-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80px; /* 限制標籤最大寬度 */
-  line-height: 1.1;
+  white-space: normal; /* 允許文字換行 */
+  overflow: visible; /* 允許文字超出 */
+  text-overflow: clip; /* 不使用省略號 */
+  line-height: 1.2; /* 稍微增加行高 */
   text-align: center;
-  font-size: 16px; /* 增大文字 */
+  font-size: 16px; /* 增加字體大小 */
+  max-width: none; /* 移除寬度限制 */
+  min-width: 80px; /* 設定最小寬度保持對齊 */
+  word-break: keep-all; /* 防止中文單詞斷開 */
 }
 
 .status-label.active {
@@ -138,36 +143,55 @@
   color: #cba96d;
 }
 
+/* 大螢幕進度條調整 */
+@media (min-width: 1200px) {
+  .status-progress {
+    --scale-factor: 1.2; /* 大螢幕放大到120% */
+    margin: 18px 0; /* 增加間距 */
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .status-progress {
+    --scale-factor: 1.15; /* 中等螢幕放大到115% */
+    margin: 15px 0;
+  }
+}
+
 /* 手機版進度條調整 */
 @media (max-width: 768px) {
   .status-progress {
     --circle-size: 55px;
+    --scale-factor: 1.05; /* 平板稍微放大 */
     padding: 25px 20px;
   }
   
   .status-circle {
-    font-size: 20px;
+    font-size: 24px; /* 增加圓形內數字大小 */
   }
   
   .status-label {
-    font-size: 14px; /* 手機版也稍微增大 */
-    max-width: 60px;
+    font-size: 14px; /* 平板版增加字體大小 */
+    min-width: 60px; /* 調整最小寬度 */
+    max-width: none; /* 移除最大寬度限制 */
   }
 }
 
 @media (max-width: 480px) {
   .status-progress {
     --circle-size: 45px;
+    --scale-factor: 1.0; /* 小螢幕保持適中大小 */
     padding: 20px 15px;
   }
   
   .status-circle {
-    font-size: 16px;
+    font-size: 18px; /* 手機版圓形內數字適當大小 */
   }
   
   .status-label {
-    font-size: 12px; /* 極小螢幕版維持較小字體 */
-    max-width: 50px;
+    font-size: 12px; /* 手機版適當的字體大小 */
+    min-width: 45px; /* 調整最小寬度 */
+    max-width: none; /* 移除最大寬度限制 */
   }
 }
 
