@@ -3,39 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <title>飛騰家電 - 報修進度查詢</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 共用既有三個 CSS（不新增新檔案） -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="staff_style.css">
   <link rel="stylesheet" href="record_detail.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+  <!-- 導覽列 -->
   <div class="navbar">
     <div class="nav-left">
       <img src="logo1.png" alt="飛騰家電logo" class="logo" />
       <span class="username">歡迎，會員名字</span>
     </div>
     <div class="nav-right">
-        <a href="home.html" class="nav-link">首頁</a>
-        <a href="repair_pending.html" class="nav-link">報修</a>
-        <a href="repair_checking.html" class="nav-link">報修進度查詢</a>
-        <a href="repair_done.html" class="nav-link">維修歷史紀錄</a>
-        <a href="history.html" class="nav-link">購買歷史</a>
-        <a href="info.html" class="nav-link">會員資料</a>
-        <a href="index.html" class="nav-link">登出</a>
+      <a href="home.html" class="nav-link">首頁</a>
+      <a href="repair_pending.html" class="nav-link">報修</a>
+      <a href="repair_checking.html" class="nav-link">報修進度查詢</a>
+      <a href="repair_done.html" class="nav-link">維修歷史紀錄</a>
+      <a href="history.html" class="nav-link">購買歷史</a>
+      <a href="info.html" class="nav-link">會員資料</a>
+      <a href="index.html" class="nav-link">登出</a>
     </div>
-    <!-- 手機版的選單 -->
+    <!-- 手機版選單 -->
     <div class="mobile-menu">
       <button id="menu-toggle">☰</button>
       <div id="overlay1" class="menu-overlay">
-          <div id="mobile-dropdown" class="mobile-dropdown">
-              <a href="home.html">首頁</a>
-              <a href="repair_pending.html">報修</a>
-              <a href="repair_checking.html">報修進度查詢</a>
-              <a href="repair_done.html">維修歷史紀錄</a>
-              <a href="history.html">購買歷史</a>
-              <a href="info.html">會員資料</a>
-              <a href="index.html">登出</a>
-          </div>
+        <div id="mobile-dropdown" class="mobile-dropdown">
+          <a href="home.html">首頁</a>
+          <a href="repair_pending.html">報修</a>
+          <a href="repair_checking.html">報修進度查詢</a>
+          <a href="repair_done.html">維修歷史紀錄</a>
+          <a href="history.html">購買歷史</a>
+          <a href="info.html">會員資料</a>
+          <a href="index.html">登出</a>
+        </div>
       </div>
     </div>
   </div>
@@ -45,124 +47,200 @@
   <div class="query-content">
     <p>以下是您目前報修中的商品：</p>
 
-    <div class="record-grid">
-      <!-- 第一組報修資料 -->
-      <div class="info-box">
-        <!-- 狀態進度條 -->
-        <div class="status-progress">
-          <div class="status-step">
-            <div class="status-circle completed">1</div>
-            <div class="status-label completed">報價</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle active">2</div>
-            <div class="status-label active">檢測中</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle">3</div>
-            <div class="status-label">已安排物流收貨</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle">✓</div>
-            <div class="status-label">已完成報修</div>
-          </div>
-        </div>
-        
-        <p>報修產品名稱：飛騰氣炸鍋</p>
-        <p>報修產品序號：123456789</p>
-        <p>報修單號：FT20240623001</p>
-        <button class="show-detail">查看所有內容</button>
-      </div>
-
-      <!-- 第二組報修資料 -->
-      <div class="info-box">
-        <!-- 狀態進度條 -->
-        <div class="status-progress">
-          <div class="status-step">
-            <div class="status-circle completed">1</div>
-            <div class="status-label completed">報價</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle completed">2</div>
-            <div class="status-label completed">檢測中</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle active">3</div>
-            <div class="status-label active">已安排物流收貨</div>
-          </div>
-          <div class="status-step">
-            <div class="status-circle">✓</div>
-            <div class="status-label">已完成報修</div>
-          </div>
-        </div>
-        
-        <p>報修產品名稱：飛騰智能電鍋</p>
-        <p>報修產品序號：1234567</p>
-        <p>報修單號：FT20240622002</p>
-        <button class="show-detail">查看所有內容</button>
-      </div>
-    </div>
+    <div class="record-grid" id="recordGrid"><!-- JS 會動態插入卡片 --></div>
 
     <p class="note">（資料由後端 API 提供）</p>
     <a href="home.html" class="back-button">← 回首頁</a>
   </div>
-  
+
   <!-- 詳細內容 Modal -->
   <div class="detail-overlay" id="overlay"></div>
   <div class="detail-modal" id="detailModal">
     <button class="close-icon" id="close-detail">✖</button>
     <h3>詳細報修內容</h3>
-    <p>報修產品名稱：飛騰氣炸鍋</p>
-    <p>報修產品序號：123456789</p>
-    <p>報修單號：FT20240623001</p>
-    <p>報修狀態：檢測中</p>
-    <p>客戶姓名：徐子涵</p>
-    <p>客戶電話：0908828081</p>
-    <p>送修日期：2025/06/20</p>
-    <p>維修方式：LINE聯絡</p>
-    <p>送修方式：到府收件</p>
+    <div id="detailContent"><!-- JS 注入 --></div>
   </div>
-  
+
   <script>
-    // 手機選單按鈕
+    /* === 手機選單 === */
     const toggleButton = document.getElementById('menu-toggle');
     const dropdown = document.getElementById('mobile-dropdown');
     const overlay1 = document.getElementById('overlay1');
-    
     toggleButton.addEventListener('click', () => {
-      dropdown.classList.toggle('active'); // 切換右側選單
+      dropdown.classList.toggle('active');
       overlay1.classList.toggle('active');
     });
-
-    overlay1.addEventListener('click', (event) => {
-      // 只有點擊到 overlay 背景（而非選單本身）才觸發關閉
-      if (event.target === overlay1) {
+    overlay1.addEventListener('click', (e) => {
+      if (e.target === overlay1) {
         dropdown.classList.remove('active');
         overlay1.classList.remove('active');
       }
     });
 
-    // 詳細內容 Modal（彈窗）
-    const detailBtns = document.querySelectorAll('.show-detail');
-    const overlay = document.querySelector('.detail-overlay');
-    const modal = document.querySelector('.detail-modal');
-    const closeBtn = document.getElementById('close-detail');
+    /* === 三行進度條設定（共用 staff_style.css 的 class） ===
+       上排：1~5 主流程
+       中排：6（三選一，全顯示 6）
+       下排：7（只接在維修中下面）
+    */
+    const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價']; // 1..5
+    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                     // 全部顯示 6
+    const FINAL_STEP = '產品送回';                                            // 顯示 7
 
-    detailBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        overlay.classList.add('active');
-        modal.classList.add('active');
+    // 舊狀態映射（如果後端仍傳舊字）
+    const STATUS_MAP = {
+      '已完成報修': '報修成立',
+      '已安排物流收貨': '已派物流前往取貨',
+      '檢測中': '檢測',
+      '報價': '報價',
+      '議價': '議價',
+      '購買新品': '購買新品',
+      '報廢': '報廢',
+      '維修中': '維修中',
+      '產品送回': '產品送回'
+    };
+    const normalizeStatus = s => STATUS_MAP[s] || s;
+
+    function generateStatusProgress(currentStatusRaw) {
+      const current = normalizeStatus(currentStatusRaw);
+
+      const inMainIdx   = MAIN_STEPS.indexOf(current);
+      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
+      const inFinal     = (current === FINAL_STEP);
+
+      // 若進入分支或最終，主線停在「議價」
+      const mainActiveIdx = (inBranchIdx >= 0 || inFinal) ? MAIN_STEPS.length - 1 : inMainIdx;
+
+      // 上排：主流程（1..5）
+      let mainHTML = '<div class="track main">';
+      MAIN_STEPS.forEach((step, i) => {
+        let cls = 'node';
+        if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
+        else if (mainActiveIdx === i)               cls += ' active';
+        mainHTML += `<div class="${cls}"><div class="dot">${i + 1}</div><div class="label">${step}</div></div>`;
       });
-    });
+      mainHTML += '</div>';
 
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('active');
-      modal.classList.remove('active');
-    });
+      // 中排：分支（全數字顯示 6）
+      let branchHTML = '<div class="track branch">';
+      BRANCH_CHOICES.forEach((step) => {
+        let cls = 'node';
+        if (inBranchIdx >= 0 && step === BRANCH_CHOICES[inBranchIdx]) cls += ' active';
+        if (inFinal && step === '維修中') cls += ' completed'; // 到 7 時，維修中顯示完成
+        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
+      });
+      branchHTML += '</div>';
 
-    overlay.addEventListener('click', () => {
-      overlay.classList.remove('active');
-      modal.classList.remove('active');
+      // 下排：最終（放在第 3 欄，前兩個用 spacer 對齊）
+      let finalHTML = '<div class="track final">';
+      finalHTML += `<div class="node spacer"></div><div class="node spacer"></div>`;
+      let fcls = 'node is-final';
+      if (inFinal) fcls += ' active';
+      finalHTML += `<div class="${fcls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
+      finalHTML += '</div>';
+
+      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}</div>`;
+    }
+
+    /* === 顧客的 mock 資料（串 API 時改這裡） === */
+    function getMockRepairs() {
+      return [
+        {
+          productName: '飛騰氣炸鍋',
+          productSerial: 'A123456789',
+          repairId: 'FT20250820001',
+          status: '議價',
+          date: '2025/08/20',
+          method: 'LINE聯絡',
+          sendMethod: '到府收件'
+        },
+        {
+          productName: '飛騰微波爐',
+          productSerial: 'MW-9988',
+          repairId: 'FT20250818003',
+          status: '維修中',
+          date: '2025/08/18',
+          method: '客服電話',
+          sendMethod: '宅配寄件'
+        },
+        {
+          productName: '飛騰智慧電鍋',
+          productSerial: 'POT-5566',
+          repairId: 'FT20250815002',
+          status: '購買新品',
+          date: '2025/08/15',
+          method: 'APP',
+          sendMethod: '門市送件'
+        },
+        {
+          productName: '飛騰烤箱',
+          productSerial: 'OV-7777',
+          repairId: 'FT20250812005',
+          status: '產品送回',
+          date: '2025/08/12',
+          method: 'APP',
+          sendMethod: '宅配寄回'
+        }
+      ];
+    }
+
+    /* === 產生卡片 === */
+    function renderCards(list) {
+      const grid = document.getElementById('recordGrid');
+      grid.innerHTML = '';
+      list.forEach((r, idx) => {
+        const card = document.createElement('div');
+        card.className = 'info-box';
+        card.innerHTML = `
+          ${generateStatusProgress(r.status)}
+          <p>報修產品名稱：${r.productName}</p>
+          <p>報修產品序號：${r.productSerial}</p>
+          <p>報修單號：${r.repairId}</p>
+          <button class="submit-button show-detail" data-index="${idx}">查看所有內容</button>
+        `;
+        grid.appendChild(card);
+      });
+      bindDetailButtons(list);
+    }
+
+    /* === Modal === */
+    function bindDetailButtons(list) {
+      const overlay = document.getElementById('overlay');
+      const modal = document.getElementById('detailModal');
+      const closeBtn = document.getElementById('close-detail');
+      const detailBtns = document.querySelectorAll('.show-detail');
+      const detailContent = document.getElementById('detailContent');
+
+      detailBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = +btn.getAttribute('data-index');
+          const r = list[i];
+          detailContent.innerHTML = `
+            <p>報修產品名稱：${r.productName}</p>
+            <p>報修產品序號：${r.productSerial}</p>
+            <p>報修單號：${r.repairId}</p>
+            <p>報修狀態：${r.status}</p>
+            <p>送修日期：${r.date}</p>
+            <p>維修方式：${r.method}</p>
+            <p>送修方式：${r.sendMethod}</p>
+          `;
+          overlay.classList.add('active');
+          modal.classList.add('active');
+        });
+      });
+
+      closeBtn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+      });
+      overlay.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+      });
+    }
+
+    /* === 初始化 === */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCards(getMockRepairs());
     });
   </script>
 </body>
