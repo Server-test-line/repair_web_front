@@ -1,5 +1,4 @@
-/* staff_style.css - 員工管理專用樣式 */
-
+/* 搜尋區塊 */
 .search-panel {
   max-width: 600px;
   margin: 40px auto;
@@ -9,193 +8,166 @@
   border-radius: 10px;
   color: #ebd7b5;
 }
-
-.search-panel .form-group {
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.search-panel label {
-  display: block;
-  font-size: 18px;
-  margin-bottom: 6px;
-  color: #ebd7b5;
-}
-
+.search-panel .form-group { margin-bottom: 20px; text-align: left; }
+.search-panel label { display: block; font-size: 18px; margin-bottom: 6px; color: #ebd7b5; }
 .search-panel input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 16px;
-  background-color: #ffffff;
-  color: #000000;
-  border: 2px solid #cba96d;
+  width: 100%; padding: 10px; border-radius: 6px; font-size: 16px;
+  background-color: #ffffff; color: #000000; border: 2px solid #cba96d;
 }
+.btn-group { display: flex; justify-content: space-between; margin-top: 20px; }
 
-.btn-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
+/* 查詢結果區 */
 .result-box {
-  max-width: 800px;
-  margin: 40px auto;
-  background-color: #012215;
+  max-width: 800px; margin: 40px auto; background-color: #012215;
+  border: 2px solid #cba96d; border-radius: 10px; color: #ebd7b5; padding: 20px;
+}
+.result-box p { margin: 14px 0; line-height: 1.2; }
+
+/* 卡片 & 版面（若缺少時補齊） */
+.record-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 20px; }
+.info-box {
+  background-color: #014027; border: 2px solid #cba96d; border-radius: 10px;
+  padding: 25px 40px; margin: 20px; width: 500px; text-align: left; font-size: 20px;
+  color: #ebd7b5; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; gap: 10px;
+}
+.submit-button {
+  padding: 10px; font-size: 16px; background: #014027; color: #cba96d;
+  border: 2px solid #cba96d; border-radius: 8px; cursor: pointer; font-weight: bold;
+}
+.submit-button:hover { background: #cba96d; color: #014027; }
+
+/* =========================
+   三行進度條樣式
+   ========================= */
+.three-track-progress {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 15px;
   border: 2px solid #cba96d;
-  border-radius: 10px;
-  color: #ebd7b5;
-  padding: 20px;
-}
-
-/* 訂單狀態進度條樣式 - 重新設計為均勻分布 */
-.status-progress {
-  --circle-size: 65px;     /* 圓的大小 */
-  --line-height: 5px;      /* 連接線高度 */
-  --scale-factor: 1.1;     /* 整體縮放比例 - 調整為稍大 */
-  
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  margin-bottom: 15px;     /* 減少與下方文字的距離 */
-  padding: 25px 30px 35px; /* 增加下方 padding 給標籤更多空間 */
+  border-radius: 12px;
   background: #014027;
-  border-radius: 15px;
-  min-width: 0; /* 防止 flex 子項目被壓縮 */
-  transform: scale(var(--scale-factor)); /* 整體等比例放大 */
-  transform-origin: center; /* 從中心點縮放 */
 }
 
-/* 進度條背景線 */
-.status-progress::before {
+/* 主流程（上排 1~5） */
+.track.main {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* 分支流程（中排：三選一，數字固定 6） */
+.track.branch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* 最終流程（下排：只在第 3 欄放 7） */
+.track.final {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* 節點共用 */
+.node {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  position: relative;
+  text-align: center;
+}
+.dot {
+  width: 50px; height: 50px; border-radius: 50%;
+  border: 3px solid #cba96d; background: #014027; color: #cba96d;
+  display: grid; place-items: center; font-weight: bold; font-size: 16px;
+  z-index: 2; transition: 0.2s;
+}
+.label { font-size: 14px; color: #ebd7b5; }
+
+/* 狀態顏色 */
+.node.completed .dot { background: #28a745; border-color: #28a745; color: #fff; }
+.node.active .dot { background: #cba96d; color: #014027; box-shadow: 0 0 10px rgba(203,169,109,0.6); }
+
+/* 主線連接線（水平） */
+.track.main .node::before,
+.track.main .node::after {
   content: "";
   position: absolute;
-  top: 50%;
-  left: calc(var(--circle-size) / 2 + 30px);
-  right: calc(var(--circle-size) / 2 + 30px);
-  height: var(--line-height);
+  top: 25px;
+  height: 3px;
+  background: #cba96d;
+  opacity: 0.4;
+  width: calc(50% - 25px);
+  z-index: 1;
+}
+.track.main .node::before { left: -4px; transform: translateX(-100%); }
+.track.main .node::after  { right: -4px; transform: translateX(100%); }
+.track.main .node:first-child::before,
+.track.main .node:last-child::after { display: none; }
+
+/* 中排分支（水平線淡一點） */
+.track.branch .node::before,
+.track.branch .node::after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  height: 3px;
   background: #cba96d;
   opacity: 0.3;
-  border-radius: 3px;
-  z-index: 1;
-  transform: translateY(-50%);
+  width: calc(50% - 25px);
 }
+.track.branch .node::before { left: -4px; transform: translateX(-100%); }
+.track.branch .node::after  { right: -4px; transform: translateX(100%); }
+.track.branch .node:first-child::before,
+.track.branch .node:last-child::after { display: none; }
 
-.status-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* 上排 → 中排：置中垂直連接（裝飾用，可留可去） */
+.branch-connector {
   position: relative;
-  z-index: 2;
-  flex: none; /* 防止被壓縮 */
-  min-width: var(--circle-size); /* 確保最小寬度 */
+  height: 10px;
 }
-
-.status-circle {
-  width: var(--circle-size);
-  height: var(--circle-size);
-  min-width: var(--circle-size); /* 防止被壓縮 */
-  min-height: var(--circle-size); /* 防止被壓縮 */
-  border: 5px solid #cba96d;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #014027;
-  color: #cba96d;
-  font-weight: 700;
-  font-size: 22px;
-  margin-bottom: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
-  flex-shrink: 0; /* 防止被壓縮 */
-}
-
-.status-circle.active {
+.branch-connector::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 12px;
   background: #cba96d;
-  color: #014027;
-  box-shadow: 0 0 20px rgba(203, 169, 109, 0.8);
-  transform: scale(1.1);
+  opacity: 0.6;
 }
 
-.status-circle.completed {
-  background: #28a745;
-  border-color: #28a745;
-  color: #ffffff;
-  box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+/* 下排 7 垂直連接：只在最右（第 3 欄，「維修中」下方） */
+.track.final .node.is-final::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 12px;
+  background: #cba96d;
+  opacity: 0.6;
 }
 
-.status-label {
-  white-space: normal; /* 允許文字換行 */
-  overflow: visible; /* 允許文字超出 */
-  text-overflow: clip; /* 不使用省略號 */
-  line-height: 1.2; /* 稍微增加行高 */
-  text-align: center;
-  font-size: 16px; /* 增加字體大小 */
-  max-width: none; /* 移除寬度限制 */
-  min-width: 80px; /* 設定最小寬度保持對齊 */
-  word-break: keep-all; /* 防止中文單詞斷開 */
-}
+/* 空白占位（用來對齊，無任何顯示） */
+.node.spacer .dot,
+.node.spacer .label,
+.node.spacer::before,
+.node.spacer::after { visibility: hidden; }
 
-.status-label.active {
-  opacity: 1;
-  font-weight: bold;
-  color: #cba96d;
-}
-
-/* 大螢幕進度條調整 */
-@media (min-width: 1200px) {
-  .status-progress {
-    --scale-factor: 1.2; /* 大螢幕放大到120% */
-    margin: 18px 0; /* 增加間距 */
-  }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-  .status-progress {
-    --scale-factor: 1.15; /* 中等螢幕放大到115% */
-    margin: 15px 0;
-  }
-}
-
-/* 手機版進度條調整 */
+/* RWD */
 @media (max-width: 768px) {
-  .status-progress {
-    --circle-size: 55px;
-    --scale-factor: 1.05; /* 平板稍微放大 */
-    padding: 25px 20px;
-  }
-  
-  .status-circle {
-    font-size: 24px; /* 增加圓形內數字大小 */
-  }
-  
-  .status-label {
-    font-size: 14px; /* 平板版增加字體大小 */
-    min-width: 60px; /* 調整最小寬度 */
-    max-width: none; /* 移除最大寬度限制 */
-  }
+  .dot { width: 44px; height: 44px; font-size: 14px; }
+  .label { font-size: 12px; }
+  .info-box { width: 100%; padding: 20px; font-size: 18px; }
 }
-
 @media (max-width: 480px) {
-  .status-progress {
-    --circle-size: 45px;
-    --scale-factor: 1.0; /* 小螢幕保持適中大小 */
-    padding: 20px 15px;
-  }
-  
-  .status-circle {
-    font-size: 18px; /* 手機版圓形內數字適當大小 */
-  }
-  
-  .status-label {
-    font-size: 12px; /* 手機版適當的字體大小 */
-    min-width: 45px; /* 調整最小寬度 */
-    max-width: none; /* 移除最大寬度限制 */
-  }
-}
-
-.result-box p {
-  margin: 14px 0;
-  line-height: 1.0;
+  .dot { width: 40px; height: 40px; font-size: 13px; }
+  .label { font-size: 11px; }
 }

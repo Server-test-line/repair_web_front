@@ -49,9 +49,7 @@
 
     <div class="result-box" id="result" style="display: none;">
       <h3>查詢結果：</h3>
-      <div class="record-grid" id="recordGrid">
-        <!-- 動態生成的記錄將在這裡顯示 -->
-      </div>
+      <div class="record-grid" id="recordGrid"></div>
     </div>
 
     <!-- 詳細內容 Modal -->
@@ -67,42 +65,34 @@
       <p>故障描述：</p>
       <p>報修聯絡內容：</p>
       
-      <!-- 可編輯的欄位 -->
       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
         <h3>可編輯資訊：</h3>
-        
         <p>收貨日：
-          <input type="date" id="receiveDate" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 180px; margin-left: 10px; font-size: 16px;" />
+          <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
         </p>
-        
         <p>收貨費用：
-          <input type="number" id="receiveFee" placeholder="輸入金額" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 150px; margin-left: 10px; font-size: 16px;" /> 元
+          <input type="number" id="receiveFee" placeholder="輸入金額" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
         </p>
-        
         <p>檢測日：
-          <input type="date" id="testDate" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 180px; margin-left: 10px; font-size: 16px;" />
+          <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
         </p>
-        
         <p>檢測費用：
-          <input type="number" id="testFee" placeholder="輸入金額" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 150px; margin-left: 10px; font-size: 16px;" /> 元
+          <input type="number" id="testFee" placeholder="輸入金額" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
         </p>
-        
         <div style="margin-top: 20px;">
-          <button onclick="saveEditableFields()" style="background: #014027; color: #cba96d; border: 2px solid #cba96d; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;">保存修改</button>
+          <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    //切換 date/text
+    // ===== 日期欄位切換：日曆 <-> 手動輸入 =====
     function toggleDateInput(id, toggleBtnId) {
       const el = document.getElementById(id);
       const btn = document.getElementById(toggleBtnId);
-
       btn.addEventListener('click', () => {
         if (el.type === 'date') {
-          // 切到可打字
           const current = el.value;
           el.type = 'text';
           el.placeholder = 'YYYY-MM-DD 或 2025/8/3';
@@ -110,7 +100,6 @@
           el.value = current;
           btn.textContent = '選日曆';
         } else {
-          // 從打字切回日曆：嘗試把打字內容標準化再回填
           const normalized = normalizeDateLike(el.value);
           if (normalized) el.value = normalized;
           el.classList.remove('is-invalid');
@@ -120,28 +109,18 @@
           btn.textContent = '手動輸入';
         }
       });
-
-      //嘗試自動轉 YYYY-MM-DD
       el.addEventListener('blur', () => {
         if (el.type === 'text' && el.value) {
           const iso = normalizeDateLike(el.value);
-          if (iso) {
-            el.value = iso;
-            el.classList.remove('is-invalid');
-          } else {
-            el.classList.add('is-invalid');
-          }
+          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
+          else { el.classList.add('is-invalid'); }
         }
       });
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && el.type === 'text') {
           const iso = normalizeDateLike(el.value);
-          if (iso) {
-            el.value = iso;
-            el.classList.remove('is-invalid');
-          } else {
-            el.classList.add('is-invalid');
-          }
+          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
+          else { el.classList.add('is-invalid'); }
         }
       });
       el.addEventListener('input', () => el.classList.remove('is-invalid'));
@@ -150,40 +129,32 @@
     function normalizeDateLike(input) {
       if (!input) return '';
       const s = String(input).trim().replace(/\./g, '/');
-      //YYYY-MM-DD / YYYY/MM/DD
       let m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
       if (m) return toISO(+m[1], +m[2], +m[3]);
-      //YYYYMMDD
       m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
       if (m) return toISO(+m[1], +m[2], +m[3]);
-      //M/D/YYYY 或 MM-DD-YYYY
       m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
       if (m) return toISO(+m[3], +m[1], +m[2]);
-      //Date 解析
       const d = new Date(s);
       if (!isNaN(d.getTime())) return toISO(d.getFullYear(), d.getMonth() + 1, d.getDate());
       return '';
     }
-
     function toISO(y, m, d) {
       const dt = new Date(y, m - 1, d);
       if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return '';
       return `${y.toString().padStart(4, '0')}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
     }
-
-    // 綁定兩個日期欄位的切換
     toggleDateInput('startDate', 'startToggle');
     toggleDateInput('endDate', 'endToggle');
 
+    // ===== 查詢 =====
     function search() {
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const repairId = document.getElementById("repairId").value.trim();
-
       const startEl = document.getElementById("startDate");
       const endEl = document.getElementById("endDate");
 
-      // 若目前在 text 模式，先嘗試把值轉成 YYYY-MM-DD 後再判斷
       if (startEl.type === 'text' && startEl.value) {
         const iso = normalizeDateLike(startEl.value);
         if (iso) startEl.value = iso;
@@ -210,7 +181,6 @@
       }
 
       if (name || phone || repairId || (start && end)) {
-        // 模擬從後端獲取的數據（實際應用中這裡會是 API 呼叫）
         const mockData = generateMockData();
         displaySearchResults(mockData);
       } else {
@@ -218,53 +188,34 @@
       }
     }
 
-    // 生成模擬數據（實際應用中會從後端 API 獲取）
+    // ===== 模擬資料（示範各種狀態） =====
     function generateMockData() {
       return [
         {
-          repairId: 'FT20250807001',
-          productSerial: 'FT001',
-          productName: '鍋',
-          repairDate: '2025-08-05',
-          status: '檢測中',
-          customerName: '王小明',
-          phone: '0912345678',
-          purchaseDate: '2024-12-01',
-          location: '台北店',
-          price: '2500',
-          repairMethod: 'APP報修',
-          description: '無法正常加熱',
-          contactContent: '客戶反映使用時無反應',
-          receiveDate: '2025-08-06',
-          receiveFee: '200',
-          testDate: '2025-08-07',
-          testFee: '150'
-        },
-        {
-          repairId: 'FT20250810002',
-          productSerial: 'FT002',
-          productName: '電鍋',
-          repairDate: '2025-08-10',
-          status: '已完成報修',
-          customerName: '王小明',
-          phone: '0912345678',
-          purchaseDate: '2024-11-15',
-          location: '新竹店',
-          price: '3200',
+          repairId: 'FT20250820004',
+          productSerial: 'FT004',
+          productName: '微波爐',
+          repairDate: '2025-08-20',
+          status: '議價',
+          customerName: '張小芬',
+          phone: '0965432187',
+          purchaseDate: '2024-09-10',
+          location: '高雄店',
+          price: '1800',
           repairMethod: '電話報修',
-          description: '蒸氣閥故障',
-          contactContent: '客戶來電說蒸氣無法正常排出',
-          receiveDate: '2025-08-11',
-          receiveFee: '150',
-          testDate: '2025-08-12',
-          testFee: '100'
+          description: '按下開始鍵沒有反應',
+          contactContent: '客戶來電說按下開始鍵沒有反應',
+          receiveDate: '',
+          receiveFee: '',
+          testDate: '',
+          testFee: ''
         },
         {
           repairId: 'FT20250815003',
           productSerial: 'FT003',
           productName: '烤箱',
           repairDate: '2025-08-15',
-          status: '已安排物流收貨',
+          status: '維修中',
           customerName: '李大華',
           phone: '0987654321',
           purchaseDate: '2024-10-20',
@@ -279,71 +230,112 @@
           testFee: ''
         },
         {
-          repairId: 'FT20250820004',
-          productSerial: 'FT004',
-          productName: '微波爐',
-          repairDate: '2025-08-20',
-          status: '報價',
-          customerName: '張小芬',
-          phone: '0965432187',
-          purchaseDate: '2024-09-10',
-          location: '高雄店',
-          price: '1800',
+          repairId: 'FT20250810002',
+          productSerial: 'FT002',
+          productName: '電鍋',
+          repairDate: '2025-08-10',
+          status: '購買新品',
+          customerName: '王小明',
+          phone: '0912345678',
+          purchaseDate: '2024-11-15',
+          location: '新竹店',
+          price: '3200',
           repairMethod: '電話報修',
-          description: '無法啟動',
-          contactContent: '客戶來電說按下開始鍵沒有反應',
-          receiveDate: '',
-          receiveFee: '',
-          testDate: '',
-          testFee: ''
+          description: '蒸氣閥故障',
+          contactContent: '客戶來電說蒸氣無法正常排出',
+          receiveDate: '2025-08-11',
+          receiveFee: '150',
+          testDate: '2025-08-12',
+          testFee: '100'
+        },
+        {
+          repairId: 'FT20250807001',
+          productSerial: 'FT001',
+          productName: '鍋',
+          repairDate: '2025-08-05',
+          status: '產品送回',
+          customerName: '王小明',
+          phone: '0912345678',
+          purchaseDate: '2024-12-01',
+          location: '台北店',
+          price: '2500',
+          repairMethod: 'APP報修',
+          description: '無法正常加熱',
+          contactContent: '客戶反映使用時無反應',
+          receiveDate: '2025-08-06',
+          receiveFee: '200',
+          testDate: '2025-08-07',
+          testFee: '150'
         }
       ];
     }
 
-    // 根據狀態生成進度條HTML
-    function generateStatusProgress(status) {
-      const steps = [
-        { key: '報價', label: '報價', icon: '1' },
-        { key: '檢測中', label: '檢測中', icon: '2' },
-        { key: '已安排物流收貨', label: '已安排物流收貨', icon: '3' },
-        { key: '已完成報修', label: '已完成報修', icon: '✓' }
-      ];
+    // ===== 進度條（3 行版） =====
+    const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價'];  // 1~5
+    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                      // 顯示數字 6
+    const FINAL_STEP = '產品送回';                                              // 顯示數字 7
 
-      const currentStepIndex = steps.findIndex(step => step.key === status);
-      
-      let progressHTML = '<div class="status-progress">';
-      
-      steps.forEach((step, index) => {
-        let circleClass = 'status-circle';
-        let labelClass = 'status-label';
-        
-        if (index < currentStepIndex) {
-          circleClass += ' completed';
-          labelClass += ' completed';
-        } else if (index === currentStepIndex) {
-          circleClass += ' active';
-          labelClass += ' active';
-        }
-        
-        progressHTML += `
-          <div class="status-step">
-            <div class="${circleClass}">${step.icon}</div>
-            <div class="${labelClass}">${step.label}</div>
-          </div>
-        `;
+    const STATUS_MAP = {
+      '已完成報修': '報修成立',
+      '已安排物流收貨': '已派物流前往取貨',
+      '檢測中': '檢測',
+      '報價': '報價',
+      '議價': '議價',
+      '購買新品': '購買新品',
+      '報廢': '報廢',
+      '維修中': '維修中',
+      '產品送回': '產品送回'
+    };
+    const normalizeStatus = s => STATUS_MAP[s] || s;
+
+    function generateStatusProgress(currentStatusRaw) {
+      const current = normalizeStatus(currentStatusRaw);
+
+      const inMainIdx   = MAIN_STEPS.indexOf(current);
+      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
+      const inFinal     = (current === FINAL_STEP);
+
+      // 主線：若已進入分支或到最終，主線停在「議價」
+      const mainActiveIdx = (inBranchIdx >= 0 || inFinal) ? MAIN_STEPS.length - 1 : inMainIdx;
+
+      // === 上排（主線 1~5） ===
+      let mainHTML = '<div class="track main">';
+      MAIN_STEPS.forEach((step, i) => {
+        let cls = 'node';
+        if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
+        else if (mainActiveIdx === i)               cls += ' active';
+        mainHTML += `<div class="${cls}"><div class="dot">${i+1}</div><div class="label">${step}</div></div>`;
       });
-      
-      progressHTML += '</div>';
-      return progressHTML;
+      mainHTML += '</div>';
+
+      // === 中排（分支 3 選一，數字固定 6） ===
+      let branchHTML = '<div class="track branch">';
+      BRANCH_CHOICES.forEach((step, i) => {
+        let cls = 'node';
+        if (inBranchIdx === i) cls += ' active';
+        // 若已到最終，將「維修中」標記為 completed（只這一個）
+        if (inFinal && step === '維修中') cls += ' completed';
+        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
+      });
+      branchHTML += '</div>';
+
+      // === 下排（最終 7，只在「維修中」下方） ===
+      // 產生兩個空白節點 + 一個最終節點
+      let finalHTML = '<div class="track final">';
+      finalHTML += `<div class="node spacer"></div><div class="node spacer"></div>`;
+      let finalCls = 'node is-final';
+      if (inFinal) finalCls += ' active';
+      finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
+      finalHTML += '</div>';
+
+      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}</div>`;
     }
 
-    // 顯示查詢結果（按維修單號排序）
+    // ===== 顯示查詢結果 =====
     function displaySearchResults(data) {
-      // 按維修單號排序（從大到小）
       const sortedData = data.sort((a, b) => b.repairId.localeCompare(a.repairId));
-      
       const recordGrid = document.getElementById('recordGrid');
-      recordGrid.innerHTML = ''; // 清空之前的結果
+      recordGrid.innerHTML = '';
 
       sortedData.forEach((record, index) => {
         const infoBox = document.createElement('div');
@@ -355,22 +347,17 @@
           <p>報修產品：${record.productName}</p>
           <p>報修日期：${record.repairDate}</p>
           <p>報修狀態：${record.status}</p>
-          <button class="show-detail" data-index="${index}">查看所有內容</button>
+          <button class="submit-button show-detail" data-index="${index}">查看所有內容</button>
         `;
         recordGrid.appendChild(infoBox);
       });
 
-      // 儲存排序後的數據供 Modal 使用
       window.currentSearchResults = sortedData;
-      
-      // 顯示結果區域
       document.getElementById("result").style.display = "block";
-      
-      // 重新綁定詳細內容按鈕
       bindDetailButtons();
     }
 
-    // 詳細內容 Modal（彈窗）功能
+    // ===== 詳細內容 Modal =====
     document.addEventListener('DOMContentLoaded', function() {
       const overlay = document.querySelector('.detail-overlay');
       const modal = document.querySelector('.detail-modal');
@@ -380,14 +367,12 @@
         overlay.classList.remove('active');
         modal.classList.remove('active');
       });
-
       overlay.addEventListener('click', () => {
         overlay.classList.remove('active');
         modal.classList.remove('active');
       });
     });
 
-    // 綁定詳細內容按鈕事件
     function bindDetailButtons() {
       const detailBtns = document.querySelectorAll('.show-detail');
       const overlay = document.querySelector('.detail-overlay');
@@ -397,25 +382,17 @@
         btn.addEventListener('click', () => {
           const index = parseInt(btn.getAttribute('data-index'));
           const record = window.currentSearchResults[index];
-          
-          // 更新 Modal 內容
           updateModalContent(record);
-          
           overlay.classList.add('active');
           modal.classList.add('active');
-          
-          // 載入現有數據到輸入框中
           loadEditableFields(record);
         });
       });
     }
 
-    // 更新 Modal 的內容
     function updateModalContent(record) {
       const modal = document.querySelector('.detail-modal');
-      
-      // 更新只讀資訊
-      const readOnlyInfo = `
+      modal.innerHTML = `
         <button class="close-icon" id="close-detail">✖</button>
         <h3>詳細報修內容</h3>
         <p>電話號碼：${record.phone}</p>
@@ -425,114 +402,71 @@
         <p>報修方式：${record.repairMethod}</p>
         <p>故障描述：${record.description}</p>
         <p>報修聯絡內容：${record.contactContent}</p>
-        
-        <!-- 可編輯的欄位 -->
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
           <h3>可編輯資訊：</h3>
-          
           <p>收貨日：
-            <input type="date" id="receiveDate" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 180px; margin-left: 10px; font-size: 16px;" />
+            <input type="date" id="receiveDate" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
           </p>
-          
           <p>收貨費用：
-            <input type="number" id="receiveFee" placeholder="輸入金額" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 150px; margin-left: 10px; font-size: 16px;" /> 元
+            <input type="number" id="receiveFee" placeholder="輸入金額" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
           </p>
-          
           <p>檢測日：
-            <input type="date" id="testDate" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 180px; margin-left: 10px; font-size: 16px;" />
+            <input type="date" id="testDate" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
           </p>
-          
           <p>檢測費用：
-            <input type="number" id="testFee" placeholder="輸入金額" style="background: #ffffff; color: #000; border: 1px solid #cba96d; padding: 8px 12px; border-radius: 4px; width: 150px; margin-left: 10px; font-size: 16px;" /> 元
+            <input type="number" id="testFee" placeholder="輸入金額" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
           </p>
-          
           <div style="margin-top: 20px;">
-            <button onclick="saveEditableFields()" style="background: #014027; color: #cba96d; border: 2px solid #cba96d; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;">保存修改</button>
+            <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
           </div>
         </div>
       `;
-      
-      modal.innerHTML = readOnlyInfo;
-      
-      // 儲存當前記錄供保存函數使用
-      window.currentRecord = record;
-      
-      // 重新綁定關閉按鈕
       const newCloseBtn = modal.querySelector('.close-icon');
       const overlay = document.querySelector('.detail-overlay');
       newCloseBtn.addEventListener('click', () => {
         overlay.classList.remove('active');
         modal.classList.remove('active');
       });
+      window.currentRecord = record;
     }
 
-    // 載入可編輯欄位的現有數據
     function loadEditableFields(record) {
-      if (record) {
-        document.getElementById('receiveDate').value = record.receiveDate || '';
-        document.getElementById('receiveFee').value = record.receiveFee || '';
-        document.getElementById('testDate').value = record.testDate || '';
-        document.getElementById('testFee').value = record.testFee || '';
-      } else {
-        // 預設值（如果沒有提供記錄）
-        document.getElementById('receiveDate').value = '2025-08-06';
-        document.getElementById('receiveFee').value = '200';
-        document.getElementById('testDate').value = '2025-08-07';
-        document.getElementById('testFee').value = '150';
-      }
+      document.getElementById('receiveDate').value = record.receiveDate || '';
+      document.getElementById('receiveFee').value = record.receiveFee || '';
+      document.getElementById('testDate').value = record.testDate || '';
+      document.getElementById('testFee').value = record.testFee || '';
     }
 
-    // 保存可編輯欄位的修改
     function saveEditableFields() {
       const receiveDate = document.getElementById('receiveDate').value;
       const receiveFee = document.getElementById('receiveFee').value;
       const testDate = document.getElementById('testDate').value;
       const testFee = document.getElementById('testFee').value;
 
-      // 基本驗證
       if (receiveDate && testDate && new Date(receiveDate) > new Date(testDate)) {
-        alert('收貨日期不能晚於檢測日期！');
-        return;
+        alert('收貨日期不能晚於檢測日期！'); return;
       }
-
       if ((receiveFee && receiveFee < 0) || (testFee && testFee < 0)) {
-        alert('費用不能為負數！');
-        return;
+        alert('費用不能為負數！'); return;
       }
 
-      // 獲取當前正在編輯的記錄
       const currentRecord = window.currentRecord;
       const repairId = currentRecord ? currentRecord.repairId : 'Unknown';
 
-      // 這裡會將數據發送到後端API保存
-      // 目前顯示確認訊息
       const changes = [];
       if (receiveDate) changes.push(`收貨日: ${receiveDate}`);
-      if (receiveFee) changes.push(`收貨費用: ${receiveFee}元`);
-      if (testDate) changes.push(`檢測日: ${testDate}`);
-      if (testFee) changes.push(`檢測費用: ${testFee}元`);
+      if (receiveFee)  changes.push(`收貨費用: ${receiveFee}元`);
+      if (testDate)    changes.push(`檢測日: ${testDate}`);
+      if (testFee)     changes.push(`檢測費用: ${testFee}元`);
 
       if (changes.length > 0) {
-        const message = `維修單號 ${repairId} 已保存以下修改：\n` + changes.join('\n');
-        alert(message);
-        
-        // 更新本地數據
+        alert(`維修單號 ${repairId} 已保存以下修改：\n` + changes.join('\n'));
         if (currentRecord) {
           currentRecord.receiveDate = receiveDate;
-          currentRecord.receiveFee = receiveFee;
-          currentRecord.testDate = testDate;
-          currentRecord.testFee = testFee;
+          currentRecord.receiveFee  = receiveFee;
+          currentRecord.testDate    = testDate;
+          currentRecord.testFee     = testFee;
         }
-        
-        // 這裡可以添加發送到後端的代碼
-        // fetch('/api/update-repair-record', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({
-        //     repairId: repairId,
-        //     receiveDate, receiveFee, testDate, testFee
-        //   })
-        // });
       } else {
         alert('請至少填寫一個欄位！');
       }
