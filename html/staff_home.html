@@ -57,10 +57,15 @@
     <div class="detail-modal" id="detailModal">
       <button class="close-icon" id="close-detail">✖</button>
       <h3>詳細報修內容</h3>
-      <p>電話號碼：0912345678</p>
+      <p>報修單號：</p>
+      <p>會員姓名：</p>
+      <p>電話號碼：</p>
+      <p>報修產品：</p>
+      <p>產品序號：</p>
+      <p>購買地點：</p>
+      <p>購買價格：</p>
       <p>購買日期：</p>
-      <p>地點：</p>
-      <p>價格：</p>
+      <p>報修日期：</p>
       <p>報修方式：</p>
       <p>故障描述：</p>
       <p>報修聯絡內容：</p>
@@ -146,6 +151,87 @@
     }
     toggleDateInput('startDate', 'startToggle');
     toggleDateInput('endDate', 'endToggle');
+
+    // ===== 自動計算總金額 =====
+    function autoCalculateTotalFee() {
+      const getNumber = (id) => Number(document.getElementById(id)?.value) || 0;
+
+      // 計算維修總金額（稅前）
+      const total = getNumber("receiveFee") + getNumber("testFee") +
+                    getNumber("repairFee") + getNumber("cleanFee") +
+                    getNumber("partsFee") + getNumber("onsideFee");
+
+      document.getElementById("totalFee").value = total;
+
+      // 計算營業稅和稅後總金額
+      const businessTax = getNumber("businessTax");
+      const totalAfterTax = total + businessTax;
+
+      document.getElementById("totalFeeAfterTax").value = totalAfterTax;
+
+      // 計算實收優惠價（以稅後總金額為基準）
+      const discount = getNumber("discount");
+      const totalAmount = totalAfterTax - discount;
+
+      document.getElementById("totalAmount").value = totalAmount >= 0 ? totalAmount : 0;
+    }
+
+    // ===== 編輯區塊切換功能 =====
+    let currentEditMode = "status"; // 預設為報修狀態
+
+    function switchEditTab(tabName) {
+      const tabs = {
+        status: document.getElementById("status-tab"),
+        cost: document.getElementById("cost-tab"),
+        parts: document.getElementById("parts-tab"),
+        invoice: document.getElementById("invoice-tab")
+      };
+
+      const sections = {
+        status: document.getElementById("status-section"),
+        cost: document.getElementById("cost-section"),
+        parts: document.getElementById("parts-section"),
+        invoice: document.getElementById("invoice-section")
+      };
+
+      // 重置所有標籤為 inactive 狀態
+      Object.values(tabs).forEach(tab => {
+        if (tab) {
+          tab.className = "edit-tab-button inactive";
+          tab.style.color = "#797777";
+          tab.style.borderBottom = "2px solid transparent";
+        }
+      });
+
+      // 隱藏所有區塊
+      Object.values(sections).forEach(section => {
+        if (section) {
+          section.style.display = "none";
+        }
+      });
+
+      // 激活選中的標籤和區塊
+      if (tabs[tabName] && sections[tabName]) {
+        tabs[tabName].className = "edit-tab-button active";
+        tabs[tabName].style.color = "#f3d28c";
+        tabs[tabName].style.borderBottom = "2px solid #cba96d";
+        sections[tabName].style.display = "block";
+        currentEditMode = tabName;
+      }
+    }
+
+    // 綁定切換事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const statusTab = document.getElementById("status-tab");
+      const costTab = document.getElementById("cost-tab");
+      const partsTab = document.getElementById("parts-tab");
+      const invoiceTab = document.getElementById("invoice-tab");
+
+      if (statusTab) statusTab.addEventListener("click", () => switchEditTab("status"));
+      if (costTab) costTab.addEventListener("click", () => switchEditTab("cost"));
+      if (partsTab) partsTab.addEventListener("click", () => switchEditTab("parts"));
+      if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
+    });
 
     // ===== 查詢 =====
     function search() {
@@ -266,6 +352,44 @@
           receiveFee: '200',
           testDate: '2025-08-07',
           testFee: '150'
+        },
+        {
+          repairId: 'FT20250805005',
+          productSerial: 'FT005',
+          productName: '電子鍋',
+          repairDate: '2025-08-05',
+          status: '送貨',
+          customerName: '陳小美',
+          phone: '0923456789',
+          purchaseDate: '2024-11-20',
+          location: '桃園店',
+          price: '2800',
+          repairMethod: '電話報修',
+          description: '內膽損壞',
+          contactContent: '客戶購買新品，正在安排送貨',
+          receiveDate: '2025-08-06',
+          receiveFee: '150',
+          testDate: '2025-08-07',
+          testFee: '100'
+        },
+        {
+          repairId: 'FT20250803006',
+          productSerial: 'FT006',
+          productName: '洗衣機',
+          repairDate: '2025-08-03',
+          status: '結案',
+          customerName: '林小華',
+          phone: '0934567890',
+          purchaseDate: '2024-10-15',
+          location: '台南店',
+          price: '15000',
+          repairMethod: 'LINE聯絡',
+          description: '排水異常',
+          contactContent: '已完成維修並送回客戶，案件結案',
+          receiveDate: '2025-08-04',
+          receiveFee: '300',
+          testDate: '2025-08-05',
+          testFee: '200'
         }
       ];
     }
@@ -273,7 +397,9 @@
     // ===== 進度條（3 行版） =====
     const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價'];  // 1~5
     const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                      // 顯示數字 6
-    const FINAL_STEP = '產品送回';                                              // 顯示數字 7
+    const DELIVERY_STEP = '送貨';                                               // 顯示數字 7（購買新品後）
+    const FINAL_STEP = '產品送回';                                              // 顯示數字 7（維修中後）
+    const CLOSE_STEP = '結案';                                                  // 顯示數字 8（最終狀態）
 
     const STATUS_MAP = {
       '已完成報修': '報修成立',
@@ -284,7 +410,9 @@
       '購買新品': '購買新品',
       '報廢': '報廢',
       '維修中': '維修中',
-      '產品送回': '產品送回'
+      '送貨': '送貨',
+      '產品送回': '產品送回',
+      '結案': '結案'
     };
     const normalizeStatus = s => STATUS_MAP[s] || s;
 
@@ -293,10 +421,12 @@
 
       const inMainIdx   = MAIN_STEPS.indexOf(current);
       const inBranchIdx = BRANCH_CHOICES.indexOf(current);
+      const inDelivery  = (current === DELIVERY_STEP);
       const inFinal     = (current === FINAL_STEP);
+      const inClose     = (current === CLOSE_STEP);
 
-      // 主線：若已進入分支或到最終，主線停在「議價」
-      const mainActiveIdx = (inBranchIdx >= 0 || inFinal) ? MAIN_STEPS.length - 1 : inMainIdx;
+      // 主線：若已進入分支、送貨、最終或結案，主線停在「議價」
+      const mainActiveIdx = (inBranchIdx >= 0 || inDelivery || inFinal || inClose) ? MAIN_STEPS.length - 1 : inMainIdx;
 
       // === 上排（主線 1~5） ===
       let mainHTML = '<div class="track main">';
@@ -313,22 +443,40 @@
       BRANCH_CHOICES.forEach((step, i) => {
         let cls = 'node';
         if (inBranchIdx === i) cls += ' active';
-        // 若已到最終，將「維修中」標記為 completed（只這一個）
-        if (inFinal && step === '維修中') cls += ' completed';
+        // 若已到送貨、最終或結案，將對應的分支標記為 completed
+        if ((inDelivery && step === '購買新品') ||
+            (inFinal && step === '維修中') ||
+            (inClose && (step === '購買新品' || step === '維修中' || step === '報廢'))) cls += ' completed';
         branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
       });
       branchHTML += '</div>';
 
-      // === 下排（最終 7，只在「維修中」下方） ===
-      // 產生兩個空白節點 + 一個最終節點
+      // === 下排（數字 7，送貨在「購買新品」下方，產品送回在「維修中」下方，報廢下方空白） ===
       let finalHTML = '<div class="track final">';
-      finalHTML += `<div class="node spacer"></div><div class="node spacer"></div>`;
+      // 送貨節點（在第一欄，購買新品下方）
+      let deliveryCls = 'node';
+      if (inDelivery) deliveryCls += ' active';
+      if (inClose) deliveryCls += ' completed';
+      finalHTML += `<div class="${deliveryCls}"><div class="dot">7</div><div class="label">${DELIVERY_STEP}</div></div>`;
+      // 空白節點（在第二欄，報廢下方）
+      finalHTML += `<div class="node spacer"></div>`;
+      // 產品送回節點（在第三欄，維修中下方）
       let finalCls = 'node is-final';
       if (inFinal) finalCls += ' active';
+      if (inClose) finalCls += ' completed';
       finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
       finalHTML += '</div>';
 
-      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}</div>`;
+      // === 第四排（數字 8，結案 - 只顯示一個在中間） ===
+      let closeHTML = '<div class="track close">';
+      closeHTML += `<div class="node spacer"></div>`;
+      let closeCls = 'node is-final';
+      if (inClose) closeCls += ' active';
+      closeHTML += `<div class="${closeCls}"><div class="dot">8</div><div class="label">${CLOSE_STEP}</div></div>`;
+      closeHTML += `<div class="node spacer"></div>`;
+      closeHTML += '</div>';
+
+      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}<div class="final-to-close-connector"></div>${closeHTML}</div>`;
     }
 
     // ===== 顯示查詢結果 =====
@@ -342,9 +490,11 @@
         infoBox.className = 'info-box';
         infoBox.innerHTML = `
           ${generateStatusProgress(record.status)}
-          <p>維修單號：${record.repairId}</p>
-          <p>產品序號：${record.productSerial}</p>
+          <p>報修單號：${record.repairId}</p>
+          <p>會員姓名：${record.customerName}</p>
+          <p>電話號碼：${record.phone}</p>
           <p>報修產品：${record.productName}</p>
+          <p>產品序號：${record.productSerial}</p>
           <p>報修日期：${record.repairDate}</p>
           <p>報修狀態：${record.status}</p>
           <button class="submit-button show-detail" data-index="${index}">查看所有內容</button>
@@ -395,27 +545,121 @@
       modal.innerHTML = `
         <button class="close-icon" id="close-detail">✖</button>
         <h3>詳細報修內容</h3>
+        <p>報修單號：${record.repairId}</p>
+        <p>會員姓名：${record.customerName}</p>
         <p>電話號碼：${record.phone}</p>
+        <p>報修產品：${record.productName}</p>
+        <p>產品序號：${record.productSerial}</p>
+        <p>購買地點：${record.location}</p>
+        <p>購買價格：${record.price}</p>
         <p>購買日期：${record.purchaseDate}</p>
-        <p>地點：${record.location}</p>
-        <p>價格：${record.price}</p>
+        <p>報修日期：${record.repairDate}</p>
         <p>報修方式：${record.repairMethod}</p>
         <p>故障描述：${record.description}</p>
         <p>報修聯絡內容：${record.contactContent}</p>
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
+          <div class="edit-tabs" style="display: flex; justify-content: space-between; width: 100%; max-width: 520px; margin: 0 auto 20px; border-bottom: 1px solid #ebd7b5;">
+            <button class="edit-tab-button active" id="status-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修狀態</button>
+            <button class="edit-tab-button inactive" id="cost-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">費用管理</button>
+            <button class="edit-tab-button inactive" id="parts-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">零件明細說明</button>
+            <button class="edit-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票明細說明</button>
+          </div>
           <h3>可編輯資訊：</h3>
-          <p>收貨日：
-            <input type="date" id="receiveDate" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-          </p>
-          <p>收貨費用：
-            <input type="number" id="receiveFee" placeholder="輸入金額" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-          </p>
-          <p>檢測日：
-            <input type="date" id="testDate" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-          </p>
-          <p>檢測費用：
-            <input type="number" id="testFee" placeholder="輸入金額" style="background:#fff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-          </p>
+
+          <!-- 第一組：報修狀態 -->
+          <div id="status-section" class="edit-section">
+            <p>報修狀態：
+              <select id="repairStatus" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;">
+                <option value="報修成立">報修成立</option>
+                <option value="已派物流前往取貨">已派物流前往取貨</option>
+                <option value="檢測">檢測</option>
+                <option value="報價">報價</option>
+                <option value="議價">議價</option>
+                <option value="購買新品">購買新品</option>
+                <option value="報廢">報廢</option>
+                <option value="維修中">維修中</option>
+                <option value="送貨">送貨</option>
+                <option value="產品送回">產品送回</option>
+                <option value="結案">結案</option>
+              </select>
+            </p>
+            <p>收貨日：
+              <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>運費報價：
+              <input type="number" id="receiveFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>檢測日：
+              <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>同意議價日：
+              <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p style="display:flex;align-items:center;">同意議價說明：
+              <textarea id="agreeNote" placeholder="請輸入說明內容" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;height:60px;margin-left:10px;font-size:16px;resize:vertical;" ></textarea>
+            </p>
+            <p>檢測費用：
+              <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>貨物抵達日：
+              <input type="date" id="arrivalDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+          </div>
+
+          <!-- 第二組：費用管理 -->
+          <div id="cost-section" class="edit-section" style="display: none;">
+            <p>維修工資：
+              <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>清潔費用：
+              <input type="number" id="cleanFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>零件費用：
+              <input type="number" id="partsFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>到府服務費用：
+              <input type="number" id="onsideFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>維修總金額：
+              <input type="number" id="totalFee" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>營業稅（5%）：
+              <input type="number" id="businessTax" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:120px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>維修總金額（稅後）：
+              <input type="number" id="totalFeeAfterTax" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>折扣金額：
+              <input type="number" id="discount" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>實收優惠價：
+              <input type="number" id="totalAmount" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+          </div>
+
+          <!-- 第三組：零件明細說明 -->
+          <div id="parts-section" class="edit-section" style="display: none;">
+            <p style="display:flex;align-items:center;">零件明細：
+              <textarea id="partsDetail" placeholder="請輸入零件明細內容" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;height:60px;margin-left:10px;font-size:16px;resize:vertical;" ></textarea>
+            </p>
+          </div>
+
+          <!-- 第四組：發票明細說明 -->
+          <div id="invoice-section" class="edit-section" style="display: none;">
+            <p>發票日期：
+              <input type="date" id="invoiceDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>號碼：
+              <input type="number" id="invoiceNumber" placeholder="請輸入號碼" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>抬頭：
+              <input type="text" id="invoiceTitle" placeholder="請輸入抬頭" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:280px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>客戶方統編：
+              <input type="number" id="customerTaxId" placeholder="請輸入統編" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" />
+            </p>
+          </div>
+
           <div style="margin-top: 20px;">
             <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
           </div>
@@ -427,26 +671,77 @@
         overlay.classList.remove('active');
         modal.classList.remove('active');
       });
+
+      // 重新綁定切換功能
+      const statusTab = modal.querySelector("#status-tab");
+      const costTab = modal.querySelector("#cost-tab");
+      const partsTab = modal.querySelector("#parts-tab");
+      const invoiceTab = modal.querySelector("#invoice-tab");
+
+      if (statusTab) statusTab.addEventListener("click", () => switchEditTab("status"));
+      if (costTab) costTab.addEventListener("click", () => switchEditTab("cost"));
+      if (partsTab) partsTab.addEventListener("click", () => switchEditTab("parts"));
+      if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
+
       window.currentRecord = record;
     }
 
     function loadEditableFields(record) {
+      document.getElementById('repairStatus').value = record.status || '報修成立';
       document.getElementById('receiveDate').value = record.receiveDate || '';
       document.getElementById('receiveFee').value = record.receiveFee || '';
       document.getElementById('testDate').value = record.testDate || '';
       document.getElementById('testFee').value = record.testFee || '';
+      document.getElementById('agreeDate').value = record.agreeDate || '';
+      document.getElementById('agreeNote').value = record.agreeNote || '';
+      document.getElementById('arrivalDate').value = record.arrivalDate || '';
+      document.getElementById('repairFee').value = record.repairFee || '';
+      document.getElementById('cleanFee').value = record.cleanFee || '';
+      document.getElementById('partsFee').value = record.partsFee || '';
+      document.getElementById('onsideFee').value = record.onsideFee || '';
+      document.getElementById('totalFee').value = record.totalFee || '';
+      document.getElementById('businessTax').value = record.businessTax || '';
+      document.getElementById('totalFeeAfterTax').value = record.totalFeeAfterTax || '';
+      document.getElementById('discount').value = record.discount || '';
+      document.getElementById('totalAmount').value = record.totalAmount || '';
+      document.getElementById('partsDetail').value = record.partsDetail || '';
+      document.getElementById('invoiceDate').value = record.invoiceDate || '';
+      document.getElementById('invoiceNumber').value = record.invoiceNumber || '';
+      document.getElementById('invoiceTitle').value = record.invoiceTitle || '';
+      document.getElementById('customerTaxId').value = record.customerTaxId || '';
     }
 
     function saveEditableFields() {
+      const repairStatus = document.getElementById('repairStatus').value;
       const receiveDate = document.getElementById('receiveDate').value;
       const receiveFee = document.getElementById('receiveFee').value;
       const testDate = document.getElementById('testDate').value;
       const testFee = document.getElementById('testFee').value;
+      const agreeDate = document.getElementById('agreeDate').value;
+      const agreeNote = document.getElementById('agreeNote').value;
+      const arrivalDate = document.getElementById('arrivalDate').value;
+      const repairFee = document.getElementById('repairFee').value;
+      const cleanFee = document.getElementById('cleanFee').value;
+      const partsFee = document.getElementById('partsFee').value;
+      const onsideFee = document.getElementById('onsideFee').value;
+      const totalFee = document.getElementById('totalFee').value;
+      const businessTax = document.getElementById('businessTax').value;
+      const totalFeeAfterTax = document.getElementById('totalFeeAfterTax').value;
+      const discount = document.getElementById('discount').value;
+      const totalAmount = document.getElementById('totalAmount').value;
+      const partsDetail = document.getElementById('partsDetail').value;
+      const invoiceDate = document.getElementById('invoiceDate').value;
+      const invoiceNumber = document.getElementById('invoiceNumber').value;
+      const invoiceTitle = document.getElementById('invoiceTitle').value;
+      const customerTaxId = document.getElementById('customerTaxId').value;
 
       if (receiveDate && testDate && new Date(receiveDate) > new Date(testDate)) {
         alert('收貨日期不能晚於檢測日期！'); return;
       }
-      if ((receiveFee && receiveFee < 0) || (testFee && testFee < 0)) {
+      if ((receiveFee && receiveFee < 0) || (testFee && testFee < 0) ||
+          (repairFee && repairFee < 0) || (cleanFee && cleanFee < 0) ||
+          (partsFee && partsFee < 0) || (onsideFee && onsideFee < 0) ||
+          (businessTax && businessTax < 0) || (discount && discount < 0)) {
         alert('費用不能為負數！'); return;
       }
 
@@ -454,18 +749,54 @@
       const repairId = currentRecord ? currentRecord.repairId : 'Unknown';
 
       const changes = [];
+      if (repairStatus) changes.push(`報修狀態: ${repairStatus}`);
       if (receiveDate) changes.push(`收貨日: ${receiveDate}`);
-      if (receiveFee)  changes.push(`收貨費用: ${receiveFee}元`);
-      if (testDate)    changes.push(`檢測日: ${testDate}`);
-      if (testFee)     changes.push(`檢測費用: ${testFee}元`);
+      if (receiveFee) changes.push(`運費報價: ${receiveFee}元`);
+      if (testDate) changes.push(`檢測日: ${testDate}`);
+      if (testFee) changes.push(`檢測費用: ${testFee}元`);
+      if (agreeDate) changes.push(`同意議價日: ${agreeDate}`);
+      if (agreeNote) changes.push(`同意議價說明: ${agreeNote}`);
+      if (arrivalDate) changes.push(`貨物抵達日: ${arrivalDate}`);
+      if (repairFee) changes.push(`維修工資: ${repairFee}元`);
+      if (cleanFee) changes.push(`清潔費用: ${cleanFee}元`);
+      if (partsFee) changes.push(`零件費用: ${partsFee}元`);
+      if (onsideFee) changes.push(`到府服務費用: ${onsideFee}元`);
+      if (totalFee) changes.push(`維修總金額: ${totalFee}元`);
+      if (businessTax) changes.push(`營業稅（5%）: ${businessTax}元`);
+      if (totalFeeAfterTax) changes.push(`維修總金額（稅後）: ${totalFeeAfterTax}元`);
+      if (discount) changes.push(`折扣金額: ${discount}元`);
+      if (totalAmount) changes.push(`實收優惠價: ${totalAmount}元`);
+      if (partsDetail) changes.push(`零件明細: ${partsDetail}`);
+      if (invoiceDate) changes.push(`發票日期: ${invoiceDate}`);
+      if (invoiceNumber) changes.push(`號碼: ${invoiceNumber}`);
+      if (invoiceTitle) changes.push(`抬頭: ${invoiceTitle}`);
+      if (customerTaxId) changes.push(`客戶方統編: ${customerTaxId}`);
 
       if (changes.length > 0) {
         alert(`維修單號 ${repairId} 已保存以下修改：\n` + changes.join('\n'));
         if (currentRecord) {
+          currentRecord.status = repairStatus;
           currentRecord.receiveDate = receiveDate;
-          currentRecord.receiveFee  = receiveFee;
-          currentRecord.testDate    = testDate;
-          currentRecord.testFee     = testFee;
+          currentRecord.receiveFee = receiveFee;
+          currentRecord.testDate = testDate;
+          currentRecord.testFee = testFee;
+          currentRecord.agreeDate = agreeDate;
+          currentRecord.agreeNote = agreeNote;
+          currentRecord.arrivalDate = arrivalDate;
+          currentRecord.repairFee = repairFee;
+          currentRecord.cleanFee = cleanFee;
+          currentRecord.partsFee = partsFee;
+          currentRecord.onsideFee = onsideFee;
+          currentRecord.totalFee = totalFee;
+          currentRecord.businessTax = businessTax;
+          currentRecord.totalFeeAfterTax = totalFeeAfterTax;
+          currentRecord.discount = discount;
+          currentRecord.totalAmount = totalAmount;
+          currentRecord.partsDetail = partsDetail;
+          currentRecord.invoiceDate = invoiceDate;
+          currentRecord.invoiceNumber = invoiceNumber;
+          currentRecord.invoiceTitle = invoiceTitle;
+          currentRecord.customerTaxId = customerTaxId;
         }
       } else {
         alert('請至少填寫一個欄位！');

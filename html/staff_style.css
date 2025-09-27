@@ -65,8 +65,16 @@
   position: relative;
 }
 
-/* 最終流程（下排：只在第 3 欄放 7） */
+/* 最終流程（下排：第三排放送貨和產品送回） */
 .track.final {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* 結案流程（第四排：只在中間放結案） */
+.track.close {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
@@ -142,7 +150,21 @@
   opacity: 0.6;
 }
 
-/* 下排 7 垂直連接：只在最右（第 3 欄，「維修中」下方） */
+/* 第三排完整水平連接線（送貨 ↔ 產品送回） */
+.track.final::after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: calc(16.67% + 25px); /* 從第一個節點的右邊開始 */
+  right: calc(16.67% + 25px); /* 到第三個節點的左邊結束 */
+  height: 3px;
+  background: #cba96d;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* 第三排垂直連接線（購買新品 → 送貨，維修中 → 產品送回） */
+.track.final .node:nth-child(1)::before,
 .track.final .node.is-final::before {
   content: "";
   position: absolute;
@@ -153,11 +175,48 @@
   height: 12px;
   background: #cba96d;
   opacity: 0.6;
+  z-index: 2;
+}
+
+/* 報廢節點下方延伸到第三排的垂直線 - 使用label避免影響水平線 */
+.track.branch .node:nth-child(2) .label::after {
+  content: "";
+  position: absolute;
+  top: 70px; /* 從label下方開始 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 55px; /* 延伸到第三排水平線 */
+  background: #cba96d;
+  opacity: 0.6;
+  z-index: 3; /* 確保顯示在上層 */
+}
+
+/* 第三排到第四排之間的連接器 */
+.final-to-close-connector {
+  position: relative;
+  height: 10px;
+}
+
+/* 從第三排水平線到結案的完整垂直連接線 */
+.final-to-close-connector::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -48px; /* 從第三排的水平線位置開始 */
+  transform: translateX(-50%);
+  width: 3px;
+  height: 60px; /* 延伸到結案節點 */
+  background: #cba96d;
+  opacity: 0.6;
+  z-index: 3;
 }
 
 /* 空白占位（用來對齊，無任何顯示） */
 .node.spacer .dot,
-.node.spacer .label,
+.node.spacer .label { visibility: hidden; }
+
+/* spacer 節點的偽元素預設隱藏 */
 .node.spacer::before,
 .node.spacer::after { visibility: hidden; }
 
