@@ -220,6 +220,7 @@
 .node.spacer::before,
 .node.spacer::after { visibility: hidden; }
 
+
 /* RWD */
 @media (max-width: 768px) {
   .dot { width: 44px; height: 44px; font-size: 14px; }
