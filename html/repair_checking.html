@@ -114,7 +114,7 @@
       const inClose     = (current === CLOSE_STEP);
 
       // 若進入分支、送貨、最終或結案，主線停在「議價」
-      const mainActiveIdx = (inBranchIdx >= 0 || inDelivery || inFinal || inClose) ? MAIN_STEPS.length - 1 : inMainIdx;
+      const mainActiveIdx = MAIN_STEPS.includes(current) ? inMainIdx : MAIN_STEPS.length;
 
       // 上排：主流程（1..5）
       let mainHTML = '<div class="track main">';
@@ -343,10 +343,11 @@
         const card = document.createElement('div');
         card.className = 'info-box';
         card.innerHTML = `
-          ${generateStatusProgress(r.status)}
           <p>報修產品名稱：${r.productName}</p>
           <p>報修產品序號：${r.productSerial}</p>
           <p>報修單號：${r.repairId}</p>
+          <p>報修狀態：${r.status}</p>
+          ${generateStatusProgress(r.status)}
           <button class="submit-button show-detail" data-index="${idx}">查看所有內容</button>
         `;
         grid.appendChild(card);
@@ -391,10 +392,11 @@
               <p>收貨日期：${r.receiveDate || ''}</p>
               <p>檢測日期：${r.testDate || ''}</p>
               <p>同意議價日期：${r.agreeDate || ''}</p>
+              <p>同意議價時間:${r.agreeTime || ''}</p>
               <p>貨物抵達日：${r.arrivalDate || ''}</p>
               <p>同意議價說明：${r.agreeNote || ''}</p>
-              <p>營業稅（5%）：${r.businessTax || ''}</p>
               <p>維修總金額（稅後）：${r.totalFeeAfterTax || ''}</p>
+              <p>營業稅（5%）：${r.businessTax || ''}</p>
             </div>
 
             <!-- 零件明細說明區塊 -->

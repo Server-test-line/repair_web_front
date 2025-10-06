@@ -1,4 +1,14 @@
 /* 搜尋區塊 */
+.account-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: 8px 20px;
+  max-width: 600px;
+  color: #ebd7b5;
+  font-size: 16px;
+}
 .search-panel {
   max-width: 600px;
   margin: 40px auto;

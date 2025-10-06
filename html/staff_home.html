@@ -16,7 +16,12 @@
   <div class="container">
     <h2 class="page-title">員工管理系統</h2>
 
-    <div class="search-panel">
+      <div class="account-bar">
+        <div class="account-left">員工帳號：<span id="staffAccount">載入中...</span></div>
+        <div class="account-right">員工名稱：<span id="staffName">載入中...</span></div>
+      </div>
+
+      <div class="search-panel">
       <div class="form-group">
         <label for="name">顧客姓名：</label>
         <input type="text" id="name" placeholder="可留空" />
@@ -426,8 +431,7 @@
       const inClose     = (current === CLOSE_STEP);
 
       // 主線：若已進入分支、送貨、最終或結案，主線停在「議價」
-      const mainActiveIdx = (inBranchIdx >= 0 || inDelivery || inFinal || inClose) ? MAIN_STEPS.length - 1 : inMainIdx;
-
+      const mainActiveIdx = MAIN_STEPS.includes(current) ? inMainIdx : MAIN_STEPS.length;
       // === 上排（主線 1~5） ===
       let mainHTML = '<div class="track main">';
       MAIN_STEPS.forEach((step, i) => {
@@ -489,7 +493,6 @@
         const infoBox = document.createElement('div');
         infoBox.className = 'info-box';
         infoBox.innerHTML = `
-          ${generateStatusProgress(record.status)}
           <p>報修單號：${record.repairId}</p>
           <p>會員姓名：${record.customerName}</p>
           <p>電話號碼：${record.phone}</p>
@@ -497,6 +500,7 @@
           <p>產品序號：${record.productSerial}</p>
           <p>報修日期：${record.repairDate}</p>
           <p>報修狀態：${record.status}</p>
+          ${generateStatusProgress(record.status)}
           <button class="submit-button show-detail" data-index="${index}">查看所有內容</button>
         `;
         recordGrid.appendChild(infoBox);
@@ -593,7 +597,10 @@
               <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
             </p>
             <p>同意議價日：
-              <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>同意議價時間：
+              <input type="time" id="agreeTime" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:160px;margin-left:10px;font-size:16px;" />
             </p>
             <p style="display:flex;align-items:center;">同意議價說明：
               <textarea id="agreeNote" placeholder="請輸入說明內容" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;height:60px;margin-left:10px;font-size:16px;resize:vertical;" ></textarea>
@@ -672,6 +679,26 @@
         modal.classList.remove('active');
       });
 
+      const tInput = modal.querySelector('#agreeTime');
+      const tOpen  = modal.querySelector('#agreeTimeOpen');
+      const openTimePicker = () => {
+        if (tInput && typeof tInput.showPicker === 'function') {
+          tInput.showPicker();
+        } else if (tInput) {
+          // 沒有 showPicker 的瀏覽器：至少聚焦，並讓鍵盤上下可調整時間
+          tInput.focus();
+        }
+      };
+      if (tInput) {
+        // 點到欄位就打開
+        tInput.addEventListener('focus', openTimePicker);
+        tInput.addEventListener('click', openTimePicker);
+      }
+      if (tOpen) {
+        // 點「選擇時間」按鈕也打開
+        tOpen.addEventListener('click', openTimePicker);
+      }
+
       // 重新綁定切換功能
       const statusTab = modal.querySelector("#status-tab");
       const costTab = modal.querySelector("#cost-tab");
@@ -693,6 +720,7 @@
       document.getElementById('testDate').value = record.testDate || '';
       document.getElementById('testFee').value = record.testFee || '';
       document.getElementById('agreeDate').value = record.agreeDate || '';
+      document.getElementById('agreeTime').value = record.agreeTime || '';
       document.getElementById('agreeNote').value = record.agreeNote || '';
       document.getElementById('arrivalDate').value = record.arrivalDate || '';
       document.getElementById('repairFee').value = record.repairFee || '';
@@ -718,6 +746,7 @@
       const testDate = document.getElementById('testDate').value;
       const testFee = document.getElementById('testFee').value;
       const agreeDate = document.getElementById('agreeDate').value;
+      const agreeTime = document.getElementById('agreeTime').value;
       const agreeNote = document.getElementById('agreeNote').value;
       const arrivalDate = document.getElementById('arrivalDate').value;
       const repairFee = document.getElementById('repairFee').value;
@@ -755,6 +784,7 @@
       if (testDate) changes.push(`檢測日: ${testDate}`);
       if (testFee) changes.push(`檢測費用: ${testFee}元`);
       if (agreeDate) changes.push(`同意議價日: ${agreeDate}`);
+      if (agreeTime) changes.push(`同意議價時間: ${agreeTime}`);
       if (agreeNote) changes.push(`同意議價說明: ${agreeNote}`);
       if (arrivalDate) changes.push(`貨物抵達日: ${arrivalDate}`);
       if (repairFee) changes.push(`維修工資: ${repairFee}元`);
@@ -781,6 +811,7 @@
           currentRecord.testDate = testDate;
           currentRecord.testFee = testFee;
           currentRecord.agreeDate = agreeDate;
+          currentRecord.agreeTime = agreeTime;
           currentRecord.agreeNote = agreeNote;
           currentRecord.arrivalDate = arrivalDate;
           currentRecord.repairFee = repairFee;
