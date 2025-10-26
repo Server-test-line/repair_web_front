@@ -7,6 +7,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  padding-top: 80px; /* 為固定導覽列預留空間 */
   width: 100vw;
   overflow-x: hidden;
   font-family: "微軟正黑體", sans-serif;
@@ -24,6 +25,11 @@ html, body {
   justify-content: space-between;
   padding: 10px 20px;
   background-color: #014027; /* 深綠背景 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .nav-left, .nav-right {

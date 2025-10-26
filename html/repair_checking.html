@@ -370,13 +370,12 @@
           detailContent.innerHTML = `
             <!-- 切換標籤 -->
             <div class="detail-tabs" style="display: flex; justify-content: space-between; width: 100%; margin: 0 0 20px; border-bottom: 1px solid #ebd7b5;">
-              <button class="detail-tab-button active" id="repair-content-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修內容</button>
-              <button class="detail-tab-button inactive" id="parts-detail-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">零件明細說明</button>
-              <button class="detail-tab-button inactive" id="invoice-detail-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票明細說明</button>
+              <button class="detail-tab-button active" id="quotation-sheet-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價單</button>
+              <button class="detail-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票</button>
             </div>
 
-            <!-- 報修內容區塊 -->
-            <div id="repair-content-section" class="detail-section">
+            <!-- 報價單區塊 -->
+            <div id="quotation-sheet-section" class="detail-section">
               <p>報修單號：${r.repairId}</p>
               <p>報修狀態：${r.status}</p>
               <p>客戶姓名：${r.customerName || ''}</p>
@@ -394,22 +393,15 @@
               <p>同意議價日期：${r.agreeDate || ''}</p>
               <p>同意議價時間:${r.agreeTime || ''}</p>
               <p>貨物抵達日：${r.arrivalDate || ''}</p>
-              <p>同意議價說明：${r.agreeNote || ''}</p>
+              <p>同意議價說明：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
+              <p>零件明細：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
               <p>維修總金額（稅後）：${r.totalFeeAfterTax || ''}</p>
               <p>營業稅（5%）：${r.businessTax || ''}</p>
             </div>
 
-            <!-- 零件明細說明區塊 -->
-            <div id="parts-detail-section" class="detail-section" style="display: none;">
-              <p>零件明細：${r.partsDetail || ''}</p>
-            </div>
-
-            <!-- 發票明細說明區塊 -->
-            <div id="invoice-detail-section" class="detail-section" style="display: none;">
-              <p>發票日期：${r.invoiceDate || ''}</p>
-              <p>號碼：${r.invoiceNumber || ''}</p>
-              <p>抬頭：${r.invoiceTitle || ''}</p>
-              <p>客戶方統編：${r.customerTaxId || ''}</p>
+            <!-- 發票區塊 -->
+            <div id="invoice-section" class="detail-section" style="display: none;">
+              <p>發票明細：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
             </div>
           `;
 
@@ -432,25 +424,21 @@
 
     /* === Modal 內部切換功能 === */
     function bindDetailTabSwitching() {
-      const repairContentTab = document.getElementById('repair-content-tab');
-      const partsDetailTab = document.getElementById('parts-detail-tab');
-      const invoiceDetailTab = document.getElementById('invoice-detail-tab');
+      const quotationSheetTab = document.getElementById('quotation-sheet-tab');
+      const invoiceTab = document.getElementById('invoice-tab');
 
-      const repairContentSection = document.getElementById('repair-content-section');
-      const partsDetailSection = document.getElementById('parts-detail-section');
-      const invoiceDetailSection = document.getElementById('invoice-detail-section');
+      const quotationSheetSection = document.getElementById('quotation-sheet-section');
+      const invoiceSection = document.getElementById('invoice-section');
 
       function switchDetailTab(tabName) {
         const tabs = {
-          repair: repairContentTab,
-          parts: partsDetailTab,
-          invoice: invoiceDetailTab
+          quotation: quotationSheetTab,
+          invoice: invoiceTab
         };
 
         const sections = {
-          repair: repairContentSection,
-          parts: partsDetailSection,
-          invoice: invoiceDetailSection
+          quotation: quotationSheetSection,
+          invoice: invoiceSection
         };
 
         // 重置所有標籤為 inactive 狀態
@@ -479,9 +467,8 @@
       }
 
       // 綁定點擊事件
-      if (repairContentTab) repairContentTab.addEventListener('click', () => switchDetailTab('repair'));
-      if (partsDetailTab) partsDetailTab.addEventListener('click', () => switchDetailTab('parts'));
-      if (invoiceDetailTab) invoiceDetailTab.addEventListener('click', () => switchDetailTab('invoice'));
+      if (quotationSheetTab) quotationSheetTab.addEventListener('click', () => switchDetailTab('quotation'));
+      if (invoiceTab) invoiceTab.addEventListener('click', () => switchDetailTab('invoice'));
     }
 
     /* === 初始化 === */

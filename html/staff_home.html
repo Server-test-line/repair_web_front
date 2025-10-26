@@ -182,21 +182,25 @@
     }
 
     // ===== 編輯區塊切換功能 =====
-    let currentEditMode = "status"; // 預設為報修狀態
+    let currentEditMode = "repair-content"; // 預設為報修內容
 
     function switchEditTab(tabName) {
       const tabs = {
-        status: document.getElementById("status-tab"),
-        cost: document.getElementById("cost-tab"),
-        parts: document.getElementById("parts-tab"),
-        invoice: document.getElementById("invoice-tab")
+        "repair-content": document.getElementById("repair-content-tab"),
+        "inspection-content": document.getElementById("inspection-content-tab"),
+        "maintenance-content": document.getElementById("maintenance-content-tab"),
+        "quotation-process": document.getElementById("quotation-process-tab"),
+        "quotation-sheet": document.getElementById("quotation-sheet-tab"),
+        "invoice": document.getElementById("invoice-tab")
       };
 
       const sections = {
-        status: document.getElementById("status-section"),
-        cost: document.getElementById("cost-section"),
-        parts: document.getElementById("parts-section"),
-        invoice: document.getElementById("invoice-section")
+        "repair-content": document.getElementById("repair-content-section"),
+        "inspection-content": document.getElementById("inspection-content-section"),
+        "maintenance-content": document.getElementById("maintenance-content-section"),
+        "quotation-process": document.getElementById("quotation-process-section"),
+        "quotation-sheet": document.getElementById("quotation-sheet-section"),
+        "invoice": document.getElementById("invoice-section")
       };
 
       // 重置所有標籤為 inactive 狀態
@@ -227,14 +231,18 @@
 
     // 綁定切換事件
     document.addEventListener('DOMContentLoaded', function() {
-      const statusTab = document.getElementById("status-tab");
-      const costTab = document.getElementById("cost-tab");
-      const partsTab = document.getElementById("parts-tab");
+      const repairContentTab = document.getElementById("repair-content-tab");
+      const inspectionContentTab = document.getElementById("inspection-content-tab");
+      const maintenanceContentTab = document.getElementById("maintenance-content-tab");
+      const quotationProcessTab = document.getElementById("quotation-process-tab");
+      const quotationSheetTab = document.getElementById("quotation-sheet-tab");
       const invoiceTab = document.getElementById("invoice-tab");
 
-      if (statusTab) statusTab.addEventListener("click", () => switchEditTab("status"));
-      if (costTab) costTab.addEventListener("click", () => switchEditTab("cost"));
-      if (partsTab) partsTab.addEventListener("click", () => switchEditTab("parts"));
+      if (repairContentTab) repairContentTab.addEventListener("click", () => switchEditTab("repair-content"));
+      if (inspectionContentTab) inspectionContentTab.addEventListener("click", () => switchEditTab("inspection-content"));
+      if (maintenanceContentTab) maintenanceContentTab.addEventListener("click", () => switchEditTab("maintenance-content"));
+      if (quotationProcessTab) quotationProcessTab.addEventListener("click", () => switchEditTab("quotation-process"));
+      if (quotationSheetTab) quotationSheetTab.addEventListener("click", () => switchEditTab("quotation-sheet"));
       if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
     });
 
@@ -563,15 +571,17 @@
         <p>報修聯絡內容：${record.contactContent}</p>
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
           <div class="edit-tabs" style="display: flex; justify-content: space-between; width: 100%; margin: 0 0 20px; border-bottom: 1px solid #ebd7b5;">
-            <button class="edit-tab-button active" id="status-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修狀態</button>
-            <button class="edit-tab-button inactive" id="cost-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">費用管理</button>
-            <button class="edit-tab-button inactive" id="parts-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">零件明細說明</button>
-            <button class="edit-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票明細說明</button>
+            <button class="edit-tab-button active" id="repair-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修內容</button>
+            <button class="edit-tab-button inactive" id="inspection-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">檢測內容</button>
+            <button class="edit-tab-button inactive" id="maintenance-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">維修內容</button>
+            <button class="edit-tab-button inactive" id="quotation-process-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價過程</button>
+            <button class="edit-tab-button inactive" id="quotation-sheet-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價單</button>
+            <button class="edit-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票</button>
           </div>
           <h3>可編輯資訊：</h3>
 
-          <!-- 第一組：報修狀態 -->
-          <div id="status-section" class="edit-section">
+          <!-- 第一組：報修內容 -->
+          <div id="repair-content-section" class="edit-section">
             <p>報修狀態：
               <select id="repairStatus" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;">
                 <option value="報修成立">報修成立</option>
@@ -590,43 +600,64 @@
             <p>收貨日：
               <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
             </p>
-            <p>運費報價：
-              <input type="number" id="receiveFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>檢測日：
-              <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-            </p>
             <p>同意議價日：
-            <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+              <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
             </p>
             <p>同意議價時間：
               <input type="time" id="agreeTime" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:160px;margin-left:10px;font-size:16px;" />
             </p>
             <p style="display:flex;align-items:center;">同意議價說明：
-              <textarea id="agreeNote" placeholder="請輸入說明內容" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;height:60px;margin-left:10px;font-size:16px;resize:vertical;" ></textarea>
+              <input type="file" id="agreeNote" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
             </p>
-            <p>檢測費用：
-              <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
+            <div id="agreeNoteFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
             <p>貨物抵達日：
               <input type="date" id="arrivalDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
             </p>
           </div>
 
-          <!-- 第二組：費用管理 -->
-          <div id="cost-section" class="edit-section" style="display: none;">
+          <!-- 第二組：檢測內容 -->
+          <div id="inspection-content-section" class="edit-section" style="display: none;">
+            <p>檢測日：
+              <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p style="display:flex;align-items:center;">檢測結果：
+              <input type="file" id="testResult" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
+            </p>
+            <div id="testResultFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
+          </div>
+
+          <!-- 第三組：維修內容 -->
+          <div id="maintenance-content-section" class="edit-section" style="display: none;">
+            <p style="display:flex;align-items:center;">維修記錄：
+              <input type="file" id="maintenanceRecord" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
+            </p>
+            <div id="maintenanceRecordFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
+          </div>
+
+          <!-- 第四組：報價過程 -->
+          <div id="quotation-process-section" class="edit-section" style="display: none;">
+            <p>運費報價：
+              <input type="number" id="receiveFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>檢測費用：
+              <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
             <p>維修工資：
               <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
             </p>
             <p>清潔費用：
               <input type="number" id="cleanFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
             </p>
-            <p>零件費用：
-              <input type="number" id="partsFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
             <p>到府服務費用：
               <input type="number" id="onsideFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
             </p>
+            <p>零件費用：
+              <input type="number" id="partsFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p style="display:flex;align-items:center;">零件明細：
+              <input type="file" id="partsDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
+            </p>
+            <div id="partsDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
             <p>維修總金額：
               <input type="number" id="totalFee" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
             </p>
@@ -644,27 +675,20 @@
             </p>
           </div>
 
-          <!-- 第三組：零件明細說明 -->
-          <div id="parts-section" class="edit-section" style="display: none;">
-            <p style="display:flex;align-items:center;">零件明細：
-              <textarea id="partsDetail" placeholder="請輸入零件明細內容" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;height:60px;margin-left:10px;font-size:16px;resize:vertical;" ></textarea>
+          <!-- 第五組：報價單 -->
+          <div id="quotation-sheet-section" class="edit-section" style="display: none;">
+            <p style="display:flex;align-items:center;">報價單明細：
+              <input type="file" id="quotationDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
             </p>
+            <div id="quotationDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
           </div>
 
-          <!-- 第四組：發票明細說明 -->
+          <!-- 第六組：發票 -->
           <div id="invoice-section" class="edit-section" style="display: none;">
-            <p>發票日期：
-              <input type="date" id="invoiceDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            <p style="display:flex;align-items:center;">發票明細：
+              <input type="file" id="invoiceDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
             </p>
-            <p>號碼：
-              <input type="number" id="invoiceNumber" placeholder="請輸入號碼" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p>抬頭：
-              <input type="text" id="invoiceTitle" placeholder="請輸入抬頭" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:280px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p>客戶方統編：
-              <input type="number" id="customerTaxId" placeholder="請輸入統編" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" />
-            </p>
+            <div id="invoiceDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
           </div>
 
           <div style="margin-top: 20px;">
@@ -700,14 +724,18 @@
       }
 
       // 重新綁定切換功能
-      const statusTab = modal.querySelector("#status-tab");
-      const costTab = modal.querySelector("#cost-tab");
-      const partsTab = modal.querySelector("#parts-tab");
+      const repairContentTab = modal.querySelector("#repair-content-tab");
+      const inspectionContentTab = modal.querySelector("#inspection-content-tab");
+      const maintenanceContentTab = modal.querySelector("#maintenance-content-tab");
+      const quotationProcessTab = modal.querySelector("#quotation-process-tab");
+      const quotationSheetTab = modal.querySelector("#quotation-sheet-tab");
       const invoiceTab = modal.querySelector("#invoice-tab");
 
-      if (statusTab) statusTab.addEventListener("click", () => switchEditTab("status"));
-      if (costTab) costTab.addEventListener("click", () => switchEditTab("cost"));
-      if (partsTab) partsTab.addEventListener("click", () => switchEditTab("parts"));
+      if (repairContentTab) repairContentTab.addEventListener("click", () => switchEditTab("repair-content"));
+      if (inspectionContentTab) inspectionContentTab.addEventListener("click", () => switchEditTab("inspection-content"));
+      if (maintenanceContentTab) maintenanceContentTab.addEventListener("click", () => switchEditTab("maintenance-content"));
+      if (quotationProcessTab) quotationProcessTab.addEventListener("click", () => switchEditTab("quotation-process"));
+      if (quotationSheetTab) quotationSheetTab.addEventListener("click", () => switchEditTab("quotation-sheet"));
       if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
 
       window.currentRecord = record;
@@ -717,22 +745,24 @@
       document.getElementById('repairStatus').value = record.status || '報修成立';
       document.getElementById('receiveDate').value = record.receiveDate || '';
       document.getElementById('receiveFee').value = record.receiveFee || '';
+      document.getElementById('arrivalDate').value = record.arrivalDate || '';
       document.getElementById('testDate').value = record.testDate || '';
       document.getElementById('testFee').value = record.testFee || '';
+      document.getElementById('testResult').value = record.testResult || '';
+      document.getElementById('repairFee').value = record.repairFee || '';
+      document.getElementById('cleanFee').value = record.cleanFee || '';
+      document.getElementById('onsideFee').value = record.onsideFee || '';
+      document.getElementById('maintenanceRecord').value = record.maintenanceRecord || '';
       document.getElementById('agreeDate').value = record.agreeDate || '';
       document.getElementById('agreeTime').value = record.agreeTime || '';
       document.getElementById('agreeNote').value = record.agreeNote || '';
-      document.getElementById('arrivalDate').value = record.arrivalDate || '';
-      document.getElementById('repairFee').value = record.repairFee || '';
-      document.getElementById('cleanFee').value = record.cleanFee || '';
       document.getElementById('partsFee').value = record.partsFee || '';
-      document.getElementById('onsideFee').value = record.onsideFee || '';
+      document.getElementById('partsDetail').value = record.partsDetail || '';
       document.getElementById('totalFee').value = record.totalFee || '';
       document.getElementById('businessTax').value = record.businessTax || '';
       document.getElementById('totalFeeAfterTax').value = record.totalFeeAfterTax || '';
       document.getElementById('discount').value = record.discount || '';
       document.getElementById('totalAmount').value = record.totalAmount || '';
-      document.getElementById('partsDetail').value = record.partsDetail || '';
       document.getElementById('invoiceDate').value = record.invoiceDate || '';
       document.getElementById('invoiceNumber').value = record.invoiceNumber || '';
       document.getElementById('invoiceTitle').value = record.invoiceTitle || '';
@@ -743,22 +773,24 @@
       const repairStatus = document.getElementById('repairStatus').value;
       const receiveDate = document.getElementById('receiveDate').value;
       const receiveFee = document.getElementById('receiveFee').value;
+      const arrivalDate = document.getElementById('arrivalDate').value;
       const testDate = document.getElementById('testDate').value;
       const testFee = document.getElementById('testFee').value;
+      const testResult = document.getElementById('testResult').value;
+      const repairFee = document.getElementById('repairFee').value;
+      const cleanFee = document.getElementById('cleanFee').value;
+      const onsideFee = document.getElementById('onsideFee').value;
+      const maintenanceRecord = document.getElementById('maintenanceRecord').value;
       const agreeDate = document.getElementById('agreeDate').value;
       const agreeTime = document.getElementById('agreeTime').value;
       const agreeNote = document.getElementById('agreeNote').value;
-      const arrivalDate = document.getElementById('arrivalDate').value;
-      const repairFee = document.getElementById('repairFee').value;
-      const cleanFee = document.getElementById('cleanFee').value;
       const partsFee = document.getElementById('partsFee').value;
-      const onsideFee = document.getElementById('onsideFee').value;
+      const partsDetail = document.getElementById('partsDetail').value;
       const totalFee = document.getElementById('totalFee').value;
       const businessTax = document.getElementById('businessTax').value;
       const totalFeeAfterTax = document.getElementById('totalFeeAfterTax').value;
       const discount = document.getElementById('discount').value;
       const totalAmount = document.getElementById('totalAmount').value;
-      const partsDetail = document.getElementById('partsDetail').value;
       const invoiceDate = document.getElementById('invoiceDate').value;
       const invoiceNumber = document.getElementById('invoiceNumber').value;
       const invoiceTitle = document.getElementById('invoiceTitle').value;
@@ -781,22 +813,24 @@
       if (repairStatus) changes.push(`報修狀態: ${repairStatus}`);
       if (receiveDate) changes.push(`收貨日: ${receiveDate}`);
       if (receiveFee) changes.push(`運費報價: ${receiveFee}元`);
+      if (arrivalDate) changes.push(`貨物抵達日: ${arrivalDate}`);
       if (testDate) changes.push(`檢測日: ${testDate}`);
       if (testFee) changes.push(`檢測費用: ${testFee}元`);
+      if (testResult) changes.push(`檢測結果: ${testResult}`);
+      if (repairFee) changes.push(`維修工資: ${repairFee}元`);
+      if (cleanFee) changes.push(`清潔費用: ${cleanFee}元`);
+      if (onsideFee) changes.push(`到府服務費用: ${onsideFee}元`);
+      if (maintenanceRecord) changes.push(`維修記錄: ${maintenanceRecord}`);
       if (agreeDate) changes.push(`同意議價日: ${agreeDate}`);
       if (agreeTime) changes.push(`同意議價時間: ${agreeTime}`);
       if (agreeNote) changes.push(`同意議價說明: ${agreeNote}`);
-      if (arrivalDate) changes.push(`貨物抵達日: ${arrivalDate}`);
-      if (repairFee) changes.push(`維修工資: ${repairFee}元`);
-      if (cleanFee) changes.push(`清潔費用: ${cleanFee}元`);
       if (partsFee) changes.push(`零件費用: ${partsFee}元`);
-      if (onsideFee) changes.push(`到府服務費用: ${onsideFee}元`);
+      if (partsDetail) changes.push(`零件明細: ${partsDetail}`);
       if (totalFee) changes.push(`維修總金額: ${totalFee}元`);
       if (businessTax) changes.push(`營業稅（5%）: ${businessTax}元`);
       if (totalFeeAfterTax) changes.push(`維修總金額（稅後）: ${totalFeeAfterTax}元`);
       if (discount) changes.push(`折扣金額: ${discount}元`);
       if (totalAmount) changes.push(`實收優惠價: ${totalAmount}元`);
-      if (partsDetail) changes.push(`零件明細: ${partsDetail}`);
       if (invoiceDate) changes.push(`發票日期: ${invoiceDate}`);
       if (invoiceNumber) changes.push(`號碼: ${invoiceNumber}`);
       if (invoiceTitle) changes.push(`抬頭: ${invoiceTitle}`);
@@ -808,22 +842,24 @@
           currentRecord.status = repairStatus;
           currentRecord.receiveDate = receiveDate;
           currentRecord.receiveFee = receiveFee;
+          currentRecord.arrivalDate = arrivalDate;
           currentRecord.testDate = testDate;
           currentRecord.testFee = testFee;
+          currentRecord.testResult = testResult;
+          currentRecord.repairFee = repairFee;
+          currentRecord.cleanFee = cleanFee;
+          currentRecord.onsideFee = onsideFee;
+          currentRecord.maintenanceRecord = maintenanceRecord;
           currentRecord.agreeDate = agreeDate;
           currentRecord.agreeTime = agreeTime;
           currentRecord.agreeNote = agreeNote;
-          currentRecord.arrivalDate = arrivalDate;
-          currentRecord.repairFee = repairFee;
-          currentRecord.cleanFee = cleanFee;
           currentRecord.partsFee = partsFee;
-          currentRecord.onsideFee = onsideFee;
+          currentRecord.partsDetail = partsDetail;
           currentRecord.totalFee = totalFee;
           currentRecord.businessTax = businessTax;
           currentRecord.totalFeeAfterTax = totalFeeAfterTax;
           currentRecord.discount = discount;
           currentRecord.totalAmount = totalAmount;
-          currentRecord.partsDetail = partsDetail;
           currentRecord.invoiceDate = invoiceDate;
           currentRecord.invoiceNumber = invoiceNumber;
           currentRecord.invoiceTitle = invoiceTitle;
