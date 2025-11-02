@@ -519,24 +519,17 @@
     async function loadFilePreview(fileId, section) {
       if (!fileId) return;
 
-      const img = section.querySelector('.previewImg');
-      const pdfContainer = section.querySelector('.previewPdfContainer');
       const resultDiv = section.querySelector('.fileResult');
+      const fileName = `${fileId}.pdf`; // 模擬顯示檔名，可依實際需求改副檔名
 
-      // 顯示一個假的連結
-      resultDiv.innerHTML = `📁<a href="#" onclick="alert('純前端展示模式，檔案 ID: ${fileId}'); return false;" style="color: #f3d28c; font-weight: bold; text-decoration: underline;">模擬查看檔案 (ID: ${fileId})</a>`;
-      img.style.display = 'none';
-      pdfContainer.style.display = 'none';
-      pdfContainer.innerHTML = '';
-
-      // 根據假 ID 決定要顯示圖片還是 PDF 佔位符
-      if (fileId.startsWith('TEST_FILE') || fileId.startsWith('PART_FILE')) {
-        img.src = "https://via.placeholder.com/400x300.png?text=Mock+Image+Preview"; // 假圖片
-        img.style.display = 'block';
-      } else if (fileId.startsWith('INVOICE_FILE') || fileId.startsWith('QUOTE_FILE') || fileId.startsWith('MAINT_FILE')) {
-        pdfContainer.innerHTML = '<div class="mock-preview-placeholder">這是一個模擬的 PDF 預覽</div>'; // 假 PDF
-        pdfContainer.style.display = 'block';
-      }
+      // 只顯示超連結名稱
+      resultDiv.innerHTML = `
+         <a href="#" 
+              onclick="alert('純前端展示模式，模擬下載：${fileName}'); return false;" 
+              style="color: #f3d28c; font-weight: bold; text-decoration: underline;">
+              ${fileName}
+            </a>
+      `;
     }
 
     /* === 載入所有檔案預覽 (主函數不變) === */
