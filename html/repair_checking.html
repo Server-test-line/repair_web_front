@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>飛騰家電 - 報修進度查詢</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 共用既有三個 CSS（不新增新檔案） -->
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 報修進度查詢 (純前端版)</title>
+  <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="staff_style.css">
-  <link rel="stylesheet" href="record_detail.css">
+  <link rel="stylesheet" href="record_detail.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* (新增) 模擬檔案預覽的樣式 */
+    .mock-preview-placeholder {
+      padding: 20px;
+      border: 1px dashed #cba96d;
+      background: #014027;
+      border-radius: 4px;
+      text-align: center;
+      color: #f3d28c;
+    }
+  </style>
 </head>
 <body>
-  <!-- 導覽列 -->
   <div class="navbar">
     <div class="nav-left">
       <img src="logo1.png" alt="飛騰家電logo" class="logo" />
@@ -21,341 +30,235 @@
       <a href="repair_pending.html" class="nav-link">報修</a>
       <a href="repair_checking.html" class="nav-link">報修進度查詢</a>
       <a href="repair_done.html" class="nav-link">維修歷史紀錄</a>
-      <a href="history.html" class="nav-link">購買歷史</a>
+      <a href="history.html" class="nav-link">購買紀錄</a>
       <a href="info.html" class="nav-link">會員資料</a>
-      <a href="index.html" class="nav-link">登出</a>
+      <a href="#" class="nav-link" onclick="logout()">登出</a>
     </div>
-    <!-- 手機版選單 -->
     <div class="mobile-menu">
-      <button id="menu-toggle">☰</button>
-      <div id="overlay1" class="menu-overlay">
-        <div id="mobile-dropdown" class="mobile-dropdown">
-          <a href="home.html">首頁</a>
-          <a href="repair_pending.html">報修</a>
-          <a href="repair_checking.html">報修進度查詢</a>
-          <a href="repair_done.html">維修歷史紀錄</a>
-          <a href="history.html">購買歷史</a>
-          <a href="info.html">會員資料</a>
-          <a href="index.html">登出</a>
+        <button id="menu-toggle">☰</button>
+        <div id="overlay1" class="menu-overlay">
+            <div id="mobile-dropdown" class="mobile-dropdown">
+                <a href="home.html">首頁</a>
+                <a href="repair_pending.html">報修</a>
+                <a href="repair_checking.html">報修進度查詢</a>
+                <a href="repair_done.html">維修歷史紀錄</a>
+                <a href="history.html">購買歷史</a>
+                <a href="info.html">會員資料</a>
+                <a href="#" onclick="logout()">登出</a>
+            </div>
         </div>
-      </div>
     </div>
   </div>
 
   <div class="page-title">報修進度查詢</div>
+  <div class="record-grid" id="recordGrid"></div>
 
-  <div class="query-content">
-    <p>以下是您目前報修中的商品：</p>
-
-    <div class="record-grid" id="recordGrid"><!-- JS 會動態插入卡片 --></div>
-
-    <p class="note">（資料由後端 API 提供）</p>
-    <a href="home.html" class="back-button">← 回首頁</a>
-  </div>
-
-  <!-- 詳細內容 Modal -->
   <div class="detail-overlay" id="overlay"></div>
   <div class="detail-modal" id="detailModal">
     <button class="close-icon" id="close-detail">✖</button>
     <h3>詳細報修內容</h3>
-    <div id="detailContent"><!-- JS 注入 --></div>
+    <div id="detailContent"></div>
   </div>
-
+  
+  <a href="home.html" class="back-button">← 回首頁</a>
+  
   <script>
-    /* === 手機選單 === */
-    const toggleButton = document.getElementById('menu-toggle');
-    const dropdown = document.getElementById('mobile-dropdown');
-    const overlay1 = document.getElementById('overlay1');
-    toggleButton.addEventListener('click', () => {
-      dropdown.classList.toggle('active');
-      overlay1.classList.toggle('active');
-    });
-    overlay1.addEventListener('click', (e) => {
-      if (e.target === overlay1) {
-        dropdown.classList.remove('active');
-        overlay1.classList.remove('active');
+      // 狀態對照 (來自 1.html)
+      const statusMap = {
+        "1": "已完成報修",
+        "2": "已安排物流收貨",
+        "3": "檢測中",
+        "4": "報價",
+        "5": "議價",
+        "6": "購買新品",
+        "7": "報廢",
+        "8": "維修中",
+        "9": "產品送回",
+        "10": "送貨",
+        "11": "結案"
+      };
+
+      // (*** 新增 ***) 模擬後端 API 回傳的假資料
+      function getMockRepairHistory() {
+        return [
+          {
+            Repair_No: 'FT20250820004',
+            Name: '張小芬',
+            Product_Name: '微波爐',
+            Product_SN: 'FT004',
+            Repair_Date: '2025-08-20',
+            Repair_Status: '5', // 議價
+            Fault_Description: '按下開始鍵沒有反應',
+            Telphone: '0965432187',
+            Place_Name: '高雄店',
+            Product_Price: '1800',
+            Order_Date: '2024-09-10',
+            Repair_Method: '電話報修',
+            Repair_Type: '宅配',
+            Adress: '高雄市XX區XX路XX號',
+            Contact_Details: '客戶來電說按下開始鍵沒有反應',
+            Receive_Date: '2025-08-21',
+            Test_Date: '2025-08-22',
+            Agree_Date: '2025-08-23 10:30',
+            Arrival_Date: '2025-08-24',
+            Inspection_Desc: 'TEST_FILE_ID_123', // 檢測內容檔案ID
+            Maintenance_Desc: '', // 維修內容檔案ID
+            Parts_Desc: 'PART_FILE_ID_456', // 零件明細檔案ID
+            Invoice_Desc: 'INVOICE_FILE_ID_789', // 發票檔案ID
+            Fees_Desc: 'QUOTE_FILE_ID_101', // 報價單檔案ID
+            Receive_Fee: '150',
+            Test_Fee: '300',
+            Repair_Fee: '800',
+            Clean_Fee: '0',
+            Parts_Fee: '1200',
+            Onside_Fee: '0',
+            Total_Fee: '2450', // 稅後
+            Tax_Fee: '117', // 稅
+            Discount: '0',
+            Total_Amount: '2450' // 實收
+          },
+          {
+            Repair_No: 'FT20250815003',
+            Name: '李大華',
+            Product_Name: '烤箱',
+            Product_SN: 'FT003',
+            Repair_Date: '2025-08-15',
+            Repair_Status: '8', // 維修中
+            Fault_Description: '溫度控制異常',
+            Telphone: '0987654321',
+            Place_Name: '台中店',
+            Product_Price: '4500',
+            Order_Date: '2024-10-20',
+            Repair_Method: '線上報修',
+            Repair_Type: '門市送件',
+            Adress: '台中市XX區XX路XX號',
+            Contact_Details: '客戶反映烤箱溫度不準確',
+            Receive_Date: '2025-08-16',
+            Test_Date: '2025-08-17',
+            Agree_Date: '',
+            Arrival_Date: '',
+            Inspection_Desc: 'TEST_FILE_ID_ABC',
+            Maintenance_Desc: 'MAINT_FILE_ID_DEF',
+            Parts_Desc: '',
+            Invoice_Desc: '',
+            Fees_Desc: '',
+            Receive_Fee: '0',
+            Test_Fee: '300',
+            Repair_Fee: '1000',
+            Clean_Fee: '100',
+            Parts_Fee: '1500',
+            Onside_Fee: '0',
+            Total_Fee: '2900',
+            Tax_Fee: '138',
+            Discount: '0',
+            Total_Amount: '2900'
+          },
+          {
+            Repair_No: 'FT20250803006',
+            Name: '林小華',
+            Product_Name: '洗衣機',
+            Product_SN: 'FT006',
+            Repair_Date: '2025-08-03',
+            Repair_Status: '11', // 結案
+            Fault_Description: '排水異常',
+            Telphone: '0934567890',
+            Place_Name: '台南店',
+            Product_Price: '15000',
+            Order_Date: '2024-10-15',
+            Repair_Method: 'LINE聯絡',
+            Repair_Type: '宅配',
+            Adress: '台南市XX區XX路XX號',
+            Contact_Details: '已完成維修並送回客戶，案件結案',
+            Receive_Date: '2025-08-04',
+            Test_Date: '2025-08-05',
+            Agree_Date: '2025-08-06 14:00',
+            Arrival_Date: '2025-08-08',
+            Inspection_Desc: '',
+            Maintenance_Desc: '',
+            Parts_Desc: 'PART_FILE_ID_777',
+            Invoice_Desc: 'INVOICE_FILE_ID_888',
+            Fees_Desc: 'QUOTE_FILE_ID_999',
+            Receive_Fee: '300',
+            Test_Fee: '500',
+            Repair_Fee: '1500',
+            Clean_Fee: '0',
+            Parts_Fee: '800',
+            Onside_Fee: '0',
+            Total_Fee: '3100',
+            Tax_Fee: '148',
+            Discount: '0',
+            Total_Amount: '3100'
+          }
+        ];
       }
+    
+      // (*** 替換 ***) 移除 API 呼叫，改用本地 Mock 資料
+      window.onload = function () {
+          const phone = localStorage.getItem('userName');
+          if (!phone) {
+              // 模擬登入，方便測試
+              console.log("未登入，模擬登入 'demo_user'");
+              localStorage.setItem('userName', 'demo_user');
+              // alert('請先登入');
+              // window.location.href = 'index.html';
+              // return;
+          }
+      
+          const container = document.querySelector('#recordGrid');
+          container.innerHTML = '<p>載入中，請稍候...</p>';
+      
+          try {
+              // (替換) 呼叫本地 MOCK 函數，不再 fetch
+              const result = getMockRepairHistory();
+              console.log('Mock 資料：', result);
+      
+              // 5. 處理資料
+              if (Array.isArray(result) && result.length > 0) {
+                  container.innerHTML = '';
+                  // (修改) 移除 .reverse()，讓資料照假資料的順序
+                  result.forEach((repairhistory, index) => {
+                      const repairBox = document.createElement('div');
+                      repairBox.className = 'info-box';
+                      repairBox.innerHTML = `
+                      <p>報修單號：${repairhistory.Repair_No || ''}</p>
+                      <p>客戶姓名：${repairhistory.Name || ''}</p>
+                      <p>報修產品名稱：${repairhistory.Product_Name || ''}</p>
+                      <p>報修產品序號：${repairhistory.Product_SN || ''}</p>
+                      <p>報修日期：${repairhistory.Repair_Date || ''}</p>
+                      <p>報修狀態：${statusMap[repairhistory.Repair_Status] || repairhistory.Repair_Status || repairhistory.status}</p>
+                      <p>故障描述：${repairhistory.Fault_Description || ''}</p>
+                      ${generateStatusProgress(repairhistory.Repair_Status)}
+                      <button class="show-detail" data-index="${index}">查看所有內容</button>
+                      <hr>
+                      `;
+                      container.appendChild(repairBox);
+                  });
+                
+                  bindDetailButtons(result);
+                
+              } else {
+                  document.querySelector('#recordGrid').innerHTML = '<p>查無報修資料</p>';
+              }
+          } catch (error) {
+              console.error('查詢失敗:', error);
+              document.querySelector('#recordGrid').innerHTML = '<p>發生錯誤，請稍後再試</p>';
+          }
+      }
+
+    const modal = document.getElementById('detailModal');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-detail');
+    
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
+    });
+    overlay.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      modal.classList.remove('active');
     });
 
-    /* === 三行進度條設定（共用 staff_style.css 的 class） ===
-       上排：1~5 主流程
-       中排：6（三選一，全顯示 6）
-       下排：7（只接在維修中下面）
-    */
-    const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價']; // 1..5
-    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                     // 全部顯示 6
-    const DELIVERY_STEP = '送貨';                                             // 顯示數字 7（購買新品後）
-    const FINAL_STEP = '產品送回';                                            // 顯示 7（維修中後）
-    const CLOSE_STEP = '結案';                                                // 顯示數字 8（最終狀態）
-
-    // 舊狀態映射（如果後端仍傳舊字）
-    const STATUS_MAP = {
-      '已完成報修': '報修成立',
-      '已安排物流收貨': '已派物流前往取貨',
-      '檢測中': '檢測',
-      '報價': '報價',
-      '議價': '議價',
-      '購買新品': '購買新品',
-      '報廢': '報廢',
-      '維修中': '維修中',
-      '送貨': '送貨',
-      '產品送回': '產品送回',
-      '結案': '結案'
-    };
-    const normalizeStatus = s => STATUS_MAP[s] || s;
-
-    function generateStatusProgress(currentStatusRaw) {
-      const current = normalizeStatus(currentStatusRaw);
-
-      const inMainIdx   = MAIN_STEPS.indexOf(current);
-      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
-      const inDelivery  = (current === DELIVERY_STEP);
-      const inFinal     = (current === FINAL_STEP);
-      const inClose     = (current === CLOSE_STEP);
-
-      // 若進入分支、送貨、最終或結案，主線停在「議價」
-      const mainActiveIdx = MAIN_STEPS.includes(current) ? inMainIdx : MAIN_STEPS.length;
-
-      // 上排：主流程（1..5）
-      let mainHTML = '<div class="track main">';
-      MAIN_STEPS.forEach((step, i) => {
-        let cls = 'node';
-        if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
-        else if (mainActiveIdx === i)               cls += ' active';
-        mainHTML += `<div class="${cls}"><div class="dot">${i + 1}</div><div class="label">${step}</div></div>`;
-      });
-      mainHTML += '</div>';
-
-      // 中排：分支（全數字顯示 6）
-      let branchHTML = '<div class="track branch">';
-      BRANCH_CHOICES.forEach((step) => {
-        let cls = 'node';
-        if (inBranchIdx >= 0 && step === BRANCH_CHOICES[inBranchIdx]) cls += ' active';
-        // 若已到送貨、最終或結案，將對應的分支標記為 completed
-        if ((inDelivery && step === '購買新品') ||
-            (inFinal && step === '維修中') ||
-            (inClose && (step === '購買新品' || step === '維修中' || step === '報廢'))) cls += ' completed';
-        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
-      });
-      branchHTML += '</div>';
-
-      // 下排：數字 7，送貨在「購買新品」下方，產品送回在「維修中」下方，報廢下方空白
-      let finalHTML = '<div class="track final">';
-      // 送貨節點（在第一欄，購買新品下方）
-      let deliveryCls = 'node';
-      if (inDelivery) deliveryCls += ' active';
-      if (inClose) deliveryCls += ' completed';
-      finalHTML += `<div class="${deliveryCls}"><div class="dot">7</div><div class="label">${DELIVERY_STEP}</div></div>`;
-      // 空白節點（在第二欄，報廢下方）
-      finalHTML += `<div class="node spacer"></div>`;
-      // 產品送回節點（在第三欄，維修中下方）
-      let finalCls = 'node is-final';
-      if (inFinal) finalCls += ' active';
-      if (inClose) finalCls += ' completed';
-      finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
-      finalHTML += '</div>';
-
-      // 第四排：數字 8，結案 - 只顯示一個在中間
-      let closeHTML = '<div class="track close">';
-      closeHTML += `<div class="node spacer"></div>`;
-      let closeCls = 'node is-final';
-      if (inClose) closeCls += ' active';
-      closeHTML += `<div class="${closeCls}"><div class="dot">8</div><div class="label">${CLOSE_STEP}</div></div>`;
-      closeHTML += `<div class="node spacer"></div>`;
-      closeHTML += '</div>';
-
-      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}<div class="final-to-close-connector"></div>${closeHTML}</div>`;
-    }
-
-    /* === 顧客的 mock 資料（串 API 時改這裡） === */
-    function getMockRepairs() {
-      return [
-        {
-          productName: '飛騰氣炸鍋',
-          productSerial: 'A123456789',
-          repairId: 'FT20250820001',
-          status: '議價',
-          date: '2025/08/20',
-          method: 'LINE聯絡',
-          sendMethod: '到府收件',
-          customerName: '張小明',
-          phone: '0912345678',
-          repairType: '到府收件',
-          address: '台北市信義區松仁路100號',
-          faultDescription: '無法正常加熱，按鈕失靈',
-          contactDetails: '客戶反映使用一年後開始出現問題',
-          receiveDate: '2025/08/21',
-          testDate: '2025/08/22',
-          agreeDate: '2025/08/23',
-          arrivalDate: '2025/08/24',
-          agreeNote: '客戶同意維修報價，希望盡快處理',
-          businessTax: '150',
-          totalFeeAfterTax: '3150',
-          partsDetail: '更換加熱元件、控制面板按鈕',
-          invoiceDate: '2025/08/25',
-          invoiceNumber: 'INV-20250825-001',
-          invoiceTitle: '張小明',
-          customerTaxId: '12345678'
-        },
-        {
-          productName: '飛騰微波爐',
-          productSerial: 'MW-9988',
-          repairId: 'FT20250818003',
-          status: '維修中',
-          date: '2025/08/18',
-          method: '客服電話',
-          sendMethod: '宅配寄件',
-          customerName: '李小華',
-          phone: '0987654321',
-          repairType: '宅配寄送',
-          address: '新北市板橋區文化路50號',
-          faultDescription: '旋轉盤不轉動，異常聲響',
-          contactDetails: '電話報修，客戶很急需維修',
-          receiveDate: '2025/08/19',
-          testDate: '2025/08/20',
-          agreeDate: '',
-          arrivalDate: '2025/08/21',
-          agreeNote: '',
-          businessTax: '200',
-          totalFeeAfterTax: '4200',
-          partsDetail: '檢查中，零件未確定',
-          invoiceDate: '',
-          invoiceNumber: '',
-          invoiceTitle: '',
-          customerTaxId: ''
-        },
-        {
-          productName: '飛騰智慧電鍋',
-          productSerial: 'POT-5566',
-          repairId: 'FT20250815002',
-          status: '購買新品',
-          date: '2025/08/15',
-          method: 'APP',
-          sendMethod: '門市送件',
-          customerName: '王小美',
-          phone: '0923456789',
-          repairType: '門市送修',
-          address: '桃園市中壢區中山路200號',
-          faultDescription: '內膽嚴重刮傷，無法使用',
-          contactDetails: 'APP報修，客戶選擇購買新品',
-          receiveDate: '2025/08/16',
-          testDate: '2025/08/17',
-          agreeDate: '2025/08/18',
-          arrivalDate: '2025/08/19',
-          agreeNote: '客戶決定購買新品，原品報廢處理',
-          businessTax: '100',
-          totalFeeAfterTax: '2100',
-          partsDetail: '原品報廢，無需零件',
-          invoiceDate: '2025/08/18',
-          invoiceNumber: 'INV-20250818-002',
-          invoiceTitle: '王小美',
-          customerTaxId: '87654321'
-        },
-        {
-          productName: '飛騰烤箱',
-          productSerial: 'OV-7777',
-          repairId: 'FT20250812005',
-          status: '產品送回',
-          date: '2025/08/12',
-          method: 'APP',
-          sendMethod: '宅配寄回',
-          customerName: '陳大偉',
-          phone: '0934567890',
-          repairType: '宅配寄送',
-          address: '台中市西屯區台灣大道300號',
-          faultDescription: '溫度控制異常',
-          contactDetails: '維修完成，準備寄回客戶',
-          receiveDate: '2025/08/13',
-          testDate: '2025/08/14',
-          agreeDate: '2025/08/15',
-          arrivalDate: '2025/08/16',
-          agreeNote: '客戶同意維修，已完成並寄回',
-          businessTax: '250',
-          totalFeeAfterTax: '5250',
-          partsDetail: '更換溫度感測器、電路板',
-          invoiceDate: '2025/08/16',
-          invoiceNumber: 'INV-20250816-003',
-          invoiceTitle: '陳大偉',
-          customerTaxId: '13579246'
-        },
-        {
-          productName: '飛騰電子鍋',
-          productSerial: 'POT-1234',
-          repairId: 'FT20250810008',
-          status: '送貨',
-          date: '2025/08/10',
-          method: '電話報修',
-          sendMethod: '到府配送',
-          customerName: '林小芬',
-          phone: '0945678901',
-          repairType: '到府收件',
-          address: '高雄市三民區建國路400號',
-          faultDescription: '電源故障',
-          contactDetails: '新品配送中',
-          receiveDate: '2025/08/11',
-          testDate: '2025/08/12',
-          agreeDate: '2025/08/13',
-          arrivalDate: '2025/08/14',
-          agreeNote: '客戶決定購買新品，正在配送中',
-          businessTax: '140',
-          totalFeeAfterTax: '2940',
-          partsDetail: '新品配送，無需零件',
-          invoiceDate: '2025/08/13',
-          invoiceNumber: 'INV-20250813-004',
-          invoiceTitle: '林小芬',
-          customerTaxId: '24681357'
-        },
-        {
-          productName: '飛騰洗衣機',
-          productSerial: 'WM-5678',
-          repairId: 'FT20250808009',
-          status: '結案',
-          date: '2025/08/08',
-          method: 'LINE聯絡',
-          sendMethod: '宅配寄回',
-          customerName: '黃小志',
-          phone: '0956789012',
-          repairType: '宅配寄送',
-          address: '台南市東區大學路500號',
-          faultDescription: '排水異常',
-          contactDetails: '維修完成並已送回客戶，案件結案',
-          receiveDate: '2025/08/09',
-          testDate: '2025/08/10',
-          agreeDate: '2025/08/11',
-          arrivalDate: '2025/08/12',
-          agreeNote: '客戶同意維修報價，維修已完成',
-          businessTax: '300',
-          totalFeeAfterTax: '6300',
-          partsDetail: '更換排水管、清潔過濾器',
-          invoiceDate: '2025/08/12',
-          invoiceNumber: 'INV-20250812-005',
-          invoiceTitle: '黃小志',
-          customerTaxId: '97531864'
-        }
-      ];
-    }
-
-    /* === 產生卡片 === */
-    function renderCards(list) {
-      const grid = document.getElementById('recordGrid');
-      grid.innerHTML = '';
-      list.forEach((r, idx) => {
-        const card = document.createElement('div');
-        card.className = 'info-box';
-        card.innerHTML = `
-          <p>報修產品名稱：${r.productName}</p>
-          <p>報修產品序號：${r.productSerial}</p>
-          <p>報修單號：${r.repairId}</p>
-          <p>報修狀態：${r.status}</p>
-          ${generateStatusProgress(r.status)}
-          <button class="submit-button show-detail" data-index="${idx}">查看所有內容</button>
-        `;
-        grid.appendChild(card);
-      });
-      bindDetailButtons(list);
-    }
-
-    /* === Modal === */
+    /* === Modal (來自 1.html 的 5 分頁版本) === */
     function bindDetailButtons(list) {
       const overlay = document.getElementById('overlay');
       const modal = document.getElementById('detailModal');
@@ -366,47 +269,103 @@
       detailBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           const i = +btn.getAttribute('data-index');
-          const r = list[i];
+          const data = list[i];
+
+          let invoiceParts = ["", "", "", ""];
+          if (data.Invoice_Desc) {
+            invoiceParts = data.Invoice_Desc.split("-");
+          }
+          
           detailContent.innerHTML = `
-            <!-- 切換標籤 -->
-            <div class="detail-tabs" style="display: flex; justify-content: space-between; width: 100%; margin: 0 0 20px; border-bottom: 1px solid #ebd7b5;">
-              <button class="detail-tab-button active" id="quotation-sheet-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價單</button>
-              <button class="detail-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票</button>
+            <div class="detail-tabs" style="display: flex; justify-content: space-between; width: 100%; max-width: 420px; margin: 0 auto 20px; border-bottom: 1px solid #ebd7b5;">
+              <button class="detail-tab-button active" id="repair-content-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修內容</button>
+              <button class="detail-tab-button inactive" id="inspection-content-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">檢測內容</button>
+              <button class="detail-tab-button inactive" id="maintenance-content-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">維修內容</button>
+              <button class="detail-tab-button inactive" id="quotation-process-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價過程</button>
+              <button class="detail-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 10px 0; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;white-space: nowrap;">報價單與發票</button>
             </div>
 
-            <!-- 報價單區塊 -->
-            <div id="quotation-sheet-section" class="detail-section">
-              <p>報修單號：${r.repairId}</p>
-              <p>報修狀態：${r.status}</p>
-              <p>客戶姓名：${r.customerName || ''}</p>
-              <p>客戶電話：${r.phone || ''}</p>
-              <p>報修產品名稱：${r.productName}</p>
-              <p>報修產品序號：${r.productSerial}</p>
-              <p>報修方式：${r.method}</p>
-              <p>送修方式：${r.repairType || ''}</p>
-              <p>收件地址：${r.address || ''}</p>
-              <p>故障描述：${r.faultDescription || ''}</p>
-              <p>報修連絡內容：${r.contactDetails || ''}</p>
-              <p>報修日期：${r.date}</p>
-              <p>收貨日期：${r.receiveDate || ''}</p>
-              <p>檢測日期：${r.testDate || ''}</p>
-              <p>同意議價日期：${r.agreeDate || ''}</p>
-              <p>同意議價時間:${r.agreeTime || ''}</p>
-              <p>貨物抵達日：${r.arrivalDate || ''}</p>
-              <p>同意議價說明：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
-              <p>零件明細：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
-              <p>維修總金額（稅後）：${r.totalFeeAfterTax || ''}</p>
-              <p>營業稅（5%）：${r.businessTax || ''}</p>
+            <div id="repair-content-section" class="detail-section">
+              <p>報修單號：${data.Repair_No}</p>
+              <p>報修狀態：${statusMap[data.Repair_Status] || data.Repair_Status || data.status}</p>
+              <p>會員姓名：${data.Name || ''}</p>
+              <p>電話號碼：${data.Telphone || ''}</p>
+              <p>報修產品：${data.Product_Name || ''}</p>
+              <p>產品序號：${data.Product_SN || ''}</p>
+              <p>購買地點：${data.Place_Name}</p>
+              <p>購買價格：${data.Product_Price}</p>
+              <p>購買日期：${data.Order_Date}</p>
+              <p>報修方式：${data.Repair_Method || ''}</p>
+              <p>送修方式：${data.Repair_Type || ''}</p>
+              <p>收件地址：${data.Adress || ''}</p>
+              <p>故障描述：${data.Fault_Description || ''}</p>
+              <p>報修連絡內容：${data.Contact_Details || ''}</p>
+              <p>報修日期：${data.Repair_Date || ''}</p>
+              <p>收貨日期：${data.Receive_Date || ''}</p>
+              <p>檢測日期：${data.Test_Date || ''}</p>
+              <p>同意議價時間：${data.Agree_Date || ''}</p>
+              <p>貨物抵達日：${data.Arrival_Date || ''}</p>
             </div>
 
-            <!-- 發票區塊 -->
-            <div id="invoice-section" class="detail-section" style="display: none;">
-              <p>發票明細：<a href="#" style="color:#cba96d;text-decoration:underline;">檢視檔案</a></p>
+            <div id="inspection-content-section" class="edit-section" style="display: none;">
+              <input type="hidden" class="fileIdInput" />
+              <div class="fileResult"></div>
+              <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+              <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
             </div>
+
+            <div id="maintenance-content-section" class="edit-section" style="display: none;">
+              <input type="hidden" class="fileIdInput" />
+              <div class="fileResult"></div>
+              <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+              <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+            
+            <div id="quotation-process-section" class="detail-section" style="display: none;">
+              <p>運費報價：${data.Receive_Fee || ''}</p>
+              <p>檢測費用：${data.Test_Fee || ''}</p>
+              <p>維修工資：${data.Repair_Fee || ''}</p>
+              <p>清潔費用：${data.Clean_Fee || ''}</p>
+              <p>零件費用：${data.Parts_Fee || ''}</p>
+              <p>到府服務費用：${data.Onside_Fee || ''}</p>
+              <p>維修總金額（稅後）：${data.Total_Fee || ''}</p>
+              <p>營業稅（5%）：${data.Tax_Fee || ''}</p>
+              <p>折扣金額：${data.Discount || ''}</p>
+              <p>實收優惠價：${data.Total_Amount || ''}</p>
+
+              <hr style="margin: 15px 0;">
+              <p style="font-weight: bold;">零件明細說明</p>
+              
+              <div id="parts-section" class="upload-section">
+                <input type="hidden" class="fileIdInput" />
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+              </div>
+            </div>
+
+            <div id="invoice-section" class="upload-section" style="display: none;">
+              <div id="invoiceFileSection" class="upload-section" style="margin-bottom: 20px;">
+                <p style="margin-bottom: 5px;">發票明細：</p>
+                <input type="hidden" class="fileIdInput" /> 
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+              </div>
+              <div id="feesFileSection" class="upload-section">
+                <p style="margin-bottom: 5px;">報價單：</p>
+                <input type="hidden" class="fileIdInput" id="feesFileId" /> 
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+              </div>
+            </div> 
           `;
-
+          
           // 綁定切換功能
           bindDetailTabSwitching();
+          // (修改) 呼叫模擬的檔案載入
+          loadAllDetailFiles(data);
           overlay.classList.add('active');
           modal.classList.add('active');
         });
@@ -424,20 +383,32 @@
 
     /* === Modal 內部切換功能 === */
     function bindDetailTabSwitching() {
-      const quotationSheetTab = document.getElementById('quotation-sheet-tab');
-      const invoiceTab = document.getElementById('invoice-tab');
+      const repairContentTab = document.getElementById("repair-content-tab");
+      const inspectionContentTab = document.getElementById("inspection-content-tab");
+      const maintenanceContentTab = document.getElementById("maintenance-content-tab");
+      const quotationProcessTab = document.getElementById("quotation-process-tab");
+      const invoiceTab = document.getElementById("invoice-tab");
 
-      const quotationSheetSection = document.getElementById('quotation-sheet-section');
+      const repairContentSection = document.getElementById('repair-content-section');
+      const inspectionContentSection = document.getElementById('inspection-content-section');
+      const maintenanceContentSection = document.getElementById('maintenance-content-section');
+      const quotationProcessSection = document.getElementById('quotation-process-section');
       const invoiceSection = document.getElementById('invoice-section');
 
       function switchDetailTab(tabName) {
         const tabs = {
-          quotation: quotationSheetTab,
+          repair: repairContentTab,
+          inspection: inspectionContentTab,
+          maintenance: maintenanceContentTab,
+          quotation: quotationProcessTab,
           invoice: invoiceTab
         };
 
         const sections = {
-          quotation: quotationSheetSection,
+          repair: repairContentSection,
+          inspection: inspectionContentSection,
+          maintenance: maintenanceContentSection,
+          quotation: quotationProcessSection,
           invoice: invoiceSection
         };
 
@@ -467,14 +438,162 @@
       }
 
       // 綁定點擊事件
-      if (quotationSheetTab) quotationSheetTab.addEventListener('click', () => switchDetailTab('quotation'));
+      if (repairContentTab) repairContentTab.addEventListener('click', () => switchDetailTab('repair'));
+      if (inspectionContentTab) inspectionContentTab.addEventListener('click', () => switchDetailTab('inspection'));
+      if (maintenanceContentTab) maintenanceContentTab.addEventListener('click', () => switchDetailTab('maintenance'));
+      if (quotationProcessTab) quotationProcessTab.addEventListener('click', () => switchDetailTab('quotation'));
       if (invoiceTab) invoiceTab.addEventListener('click', () => switchDetailTab('invoice'));
     }
 
-    /* === 初始化 === */
-    document.addEventListener('DOMContentLoaded', () => {
-      renderCards(getMockRepairs());
+    const MAIN_STEPS = ['已完成報修', '已安排物流收貨', '檢測中', '報價', '議價'];
+    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];
+    const DELIVERY_STEP = '送貨';
+    const FINAL_STEP = '產品送回';
+    const CLOSE_STEP = '結案';
+
+    function generateStatusProgress(repairStatusCode) {
+      const current = statusMap[repairStatusCode];
+    
+      const inMainIdx   = MAIN_STEPS.indexOf(current);
+      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
+      const inFinal     = (repairStatusCode === "9");
+      const inDelivery  = (repairStatusCode === "10");
+      const inClose     = (repairStatusCode === "11");
+    
+      // 主線進度邏輯：若不在主線，主線全視為完成
+      const mainCompleted = (inBranchIdx >= 0 || inDelivery || inFinal || inClose);
+      const mainActiveIdx = MAIN_STEPS.indexOf(current);
+    
+      // === 上排（主線 1~5） ===
+      let mainHTML = '<div class="track main">';
+      MAIN_STEPS.forEach((step, i) => {
+        let cls = 'node';
+        if (mainCompleted) cls += ' completed';
+        else if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
+        else if (mainActiveIdx === i) cls += ' active';
+        mainHTML += `<div class="${cls}"><div class="dot">${i+1}</div><div class="label">${step}</div></div>`;
+      });
+      mainHTML += '</div>';
+    
+      // === 中排（分支，數字固定 6） ===
+      let branchHTML = '<div class="track branch">';
+      BRANCH_CHOICES.forEach((step, i) => {
+        let cls = 'node';
+        if (inBranchIdx === i) cls += ' active';
+        if ((inDelivery && step === '購買新品') ||
+          (inFinal && step === '維修中') ||
+          (inClose && (step === '購買新品' || step === '維修中' || step === '報廢'))) cls += ' completed'; 
+        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
+      });
+      branchHTML += '</div>';
+    
+      // 下排：數字 7，送貨在「購買新品」下方，產品送回在「維修中」下方，報廢下方空白
+      let finalHTML = '<div class="track final">';
+      let deliveryCls = 'node';
+      if (inDelivery) deliveryCls += ' active';
+      if (inClose) deliveryCls += ' completed';
+      finalHTML += `<div class="${deliveryCls}"><div class="dot">7</div><div class="label">${DELIVERY_STEP}</div></div>`;
+      // 空白節點（在第二欄，報廢下方）
+      finalHTML += `<div class="node spacer"></div>`;
+      // 產品送回節點（在第三欄，維修中下方）
+      let finalCls = 'node is-final';
+      if (inFinal) finalCls += ' active';
+      if (inClose) finalCls += ' completed';
+      finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
+      finalHTML += '</div>';
+
+      // 第四排：數字 8，結案 - 只顯示一個在中間
+      let closeHTML = '<div class="track close">';
+      closeHTML += `<div class="node spacer"></div>`;
+      let closeCls = 'node is-final';
+      if (inClose) closeCls += ' active';
+      closeHTML += `<div class="${closeCls}"><div class="dot">8</div><div class="label">${CLOSE_STEP}</div></div>`;
+      closeHTML += `<div class="node spacer"></div>`;
+      closeHTML += '</div>';
+      
+      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}<div class="final-to-close-connector"></div>${closeHTML}</div>`;
+    }
+
+    // (*** 替換 ***) 模擬載入檔案預覽
+    // 這個函數不再真的去 Google Drive 抓檔案，只是顯示假的外觀
+    async function loadFilePreview(fileId, section) {
+      if (!fileId) return;
+
+      const img = section.querySelector('.previewImg');
+      const pdfContainer = section.querySelector('.previewPdfContainer');
+      const resultDiv = section.querySelector('.fileResult');
+
+      // 顯示一個假的連結
+      resultDiv.innerHTML = `📁<a href="#" onclick="alert('純前端展示模式，檔案 ID: ${fileId}'); return false;" style="color: #f3d28c; font-weight: bold; text-decoration: underline;">模擬查看檔案 (ID: ${fileId})</a>`;
+      img.style.display = 'none';
+      pdfContainer.style.display = 'none';
+      pdfContainer.innerHTML = '';
+
+      // 根據假 ID 決定要顯示圖片還是 PDF 佔位符
+      if (fileId.startsWith('TEST_FILE') || fileId.startsWith('PART_FILE')) {
+        img.src = "https://via.placeholder.com/400x300.png?text=Mock+Image+Preview"; // 假圖片
+        img.style.display = 'block';
+      } else if (fileId.startsWith('INVOICE_FILE') || fileId.startsWith('QUOTE_FILE') || fileId.startsWith('MAINT_FILE')) {
+        pdfContainer.innerHTML = '<div class="mock-preview-placeholder">這是一個模擬的 PDF 預覽</div>'; // 假 PDF
+        pdfContainer.style.display = 'block';
+      }
+    }
+
+    /* === 載入所有檔案預覽 (主函數不變) === */
+    async function loadAllDetailFiles(record) {
+      const partsSection = document.getElementById('parts-section');
+      if (partsSection && record.Parts_Desc) {
+        partsSection.querySelector('.fileIdInput').value = record.Parts_Desc;
+        await loadFilePreview(record.Parts_Desc, partsSection);
+      }
+      const inspectionSection = document.getElementById('inspection-content-section');
+      const inspectionFileId = record.Inspection_Desc || '';
+      if (inspectionSection && inspectionFileId) {
+          await loadFilePreview(inspectionFileId, inspectionSection);
+      }
+      const maintenanceSection = document.getElementById('maintenance-content-section');
+      const maintenanceFileId = record.Maintenance_Desc || '';
+      if (maintenanceSection && maintenanceFileId) {
+          await loadFilePreview(maintenanceFileId, maintenanceSection);
+      }
+      
+      const invoiceFileSection = document.getElementById('invoiceFileSection');
+      if (invoiceFileSection && record.Invoice_Desc) {
+          invoiceFileSection.querySelector('.fileIdInput').value = record.Invoice_Desc;
+          await loadFilePreview(record.Invoice_Desc, invoiceFileSection);
+      }
+      
+      const feesFileSection = document.getElementById('feesFileSection');
+      const feesFileId = record.Fees_Desc || '';
+      if (feesFileSection && feesFileId) {
+          feesFileSection.querySelector('.fileIdInput').value = feesFileId;
+          await loadFilePreview(feesFileId, feesFileSection);
+      }
+    }
+    
+  </script>
+  
+  <script src="logout.js"></script>
+  
+  <script>
+    const toggleButton = document.getElementById('menu-toggle');
+    const dropdown = document.getElementById('mobile-dropdown');
+    const overlay1 = document.getElementById('overlay1');
+
+    toggleButton.addEventListener('click', () => {
+      dropdown.classList.toggle('active'); // 切換右側選單
+      overlay1.classList.toggle('active');
+    });
+
+    overlay1.addEventListener('click', (event) => {
+      // 只有點擊到 overlay 背景（而非選單本身）才觸發關閉
+      if (event.target === overlay1) {
+        dropdown.classList.remove('active');
+        overlay1.classList.remove('active');
+      }
     });
   </script>
+  
+  <script src="welcome-username.js"></script>
 </body>
 </html>
