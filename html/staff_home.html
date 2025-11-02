@@ -621,4 +621,377 @@
               <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
             </p>
             <p>維修工資：
-              <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4
+              <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>清潔費用：
+              <input type="number" id="cleanFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>到府服務費用：
+              <input type="number" id="onsideFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>零件費用：
+              <input type="number" id="partsFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p style="display:flex;align-items:center;">零件明細(檔案)：
+              <input type="file" id="partsDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
+            </p>
+            <div id="partsDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
+            <p>維修總金額：
+              <input type="number" id="totalFee" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>營業稅（5%）：
+              <input type="number" id="businessTax" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:120px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>維修總金額（稅後）：
+              <input type="number" id="totalFeeAfterTax" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>折扣金額：
+              <input type="number" id="discount" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>實收優惠價：
+              <input type="number" id="totalAmount" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <div id="parts-section" class="upload-section">
+              <p style="margin-bottom: 5px;">上傳零件說明 (檔案)：</p>
+              <input type="file" id="partsNoteFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />               <button type="button" onclick="uploadToDrive(this)">上傳零件說明</button>
+              <input type="hidden" class="fileIdInput" />
+              <div class="fileResult"></div>
+              <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+              <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+          </div>
+          
+                    <div id="invoice-section" class="edit-section" style="display: none;">
+            <p>發票日期：
+              <input type="date" id="invoiceDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>發票號碼：
+              <input type="text" id="invoiceNumber" placeholder="AB-12345678" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>發票抬頭：
+              <input type="text" id="invoiceTitle" placeholder="輸入公司/個人名稱" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:250px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>客戶方統編：
+              <input type="text" id="customerTaxId" placeholder="輸入 8 位數字" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+
+            <div id="invoiceFileSection" class="upload-section" style="margin-top: 20px; border-top: 1px dashed #cba96d; padding-top: 15px;">
+              <p style="margin-bottom: 5px;">發票明細 (檔案)：</p>
+              <input type="file" id="invoiceFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />
+              <button type="button" onclick="uploadToDrive(this)">上傳發票</button>
+              <input type="hidden" class="fileIdInput" /> 
+              <div class="fileResult"></div>
+              <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+              <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+            <div id="feesFileSection" class="upload-section">
+              <p style="margin-bottom: 5px;">報價單 (檔案)：</p>
+              <input type="file" id="feesFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />
+              <button type="button" onclick="uploadToDrive(this)">上傳報價單</button>
+              <input type="hidden" class="fileIdInput" id="feesFileId" /> 
+              <div class="fileResult"></div>
+              <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+              <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+          </div> 
+
+          <div style="margin-top: 20px;">
+            <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
+          </div>
+        </div>
+      `;
+      const newCloseBtn = modal.querySelector('.close-icon');
+      const overlay = document.querySelector('.detail-overlay');
+      // (修正) 重新綁定關閉事件
+      newCloseBtn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+      });
+      overlay.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+      });
+
+      const tInput = modal.querySelector('#agreeTime');
+      const openTimePicker = () => {
+        if (tInput && typeof tInput.showPicker === 'function') {
+          tInput.showPicker();
+        } else if (tInput) {
+          tInput.focus();
+        }
+      };
+      if (tInput) {
+        tInput.addEventListener('focus', openTimePicker);
+        tInput.addEventListener('click', openTimePicker);
+      }
+
+      // (修正) 重新綁定 Tab 切換功能
+      const repairContentTab = modal.querySelector("#repair-content-tab");
+      const inspectionContentTab = modal.querySelector("#inspection-content-tab");
+      const maintenanceContentTab = modal.querySelector("#maintenance-content-tab");
+      const quotationProcessTab = modal.querySelector("#quotation-process-tab");
+      const invoiceTab = modal.querySelector("#invoice-tab");
+
+      if (repairContentTab) repairContentTab.addEventListener("click", () => switchEditTab("repair-content"));
+      if (inspectionContentTab) inspectionContentTab.addEventListener("click", () => switchEditTab("inspection-content"));
+      if (maintenanceContentTab) maintenanceContentTab.addEventListener("click", () => switchEditTab("maintenance-content"));
+      if (quotationProcessTab) quotationProcessTab.addEventListener("click", () => switchEditTab("quotation-process"));
+      if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
+
+      window.currentRecord = record;
+    }
+
+    // (*** 修正：確保所有欄位都能被正確讀取 ***)
+    function loadEditableFields(record) {
+      // 輔助函數：安全地設定
+      const setValue = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = value || '';
+        } else {
+          console.warn(`loadEditableFields: Element with ID '${id}' not found.`);
+        }
+      };
+      
+      // 輔助函數：安全地設定檔案顯示
+      const setFileDisplay = (divId, fileName) => {
+        const div = document.getElementById(divId);
+        if (div && fileName) {
+          div.textContent = `已上傳檔案： ${fileName}`;
+        }
+      };
+
+      setValue('repairStatus', record.status || '報修成立');
+      setValue('receiveDate', record.receiveDate);
+      setValue('receiveFee', record.receiveFee);
+      setValue('arrivalDate', record.arrivalDate);
+      setValue('testDate', record.testDate);
+      setValue('testFee', record.testFee);
+      setValue('testResult', record.testResult);
+      setValue('repairFee', record.repairFee);
+      setValue('cleanFee', record.cleanFee);
+      setValue('onsideFee', record.onsideFee);
+      setValue('maintenanceRecord', record.maintenanceRecord);
+      setValue('agreeDate', record.agreeDate);
+      setValue('agreeTime', record.agreeTime);
+      setValue('agreeNote', record.agreeNote);
+      setValue('partsFee', record.partsFee);
+      // (修正) type="file" 不能設定 value，改為顯示在 div 中
+      // setValue('partsDetail', record.partsDetail); // 錯誤
+      setFileDisplay('partsDetailFiles', record.partsDetail);
+
+      setValue('totalFee', record.totalFee);
+      setValue('businessTax', record.businessTax);
+      setValue('totalFeeAfterTax', record.totalFeeAfterTax);
+      setValue('discount', record.discount);
+      setValue('totalAmount', record.totalAmount);
+      setValue('invoiceDate', record.invoiceDate);
+      setValue('invoiceNumber', record.invoiceNumber);
+      setValue('invoiceTitle', record.invoiceTitle);
+      setValue('customerTaxId', record.customerTaxId);
+
+      // (新增) 觸發一次金額計算，以載入總計
+      autoCalculateTotalFee();
+    }
+
+    // (*** 修正：確保所有欄位都能被正確儲存 + 儲存後刷新列表 ***)
+    function saveEditableFields() {
+      // 輔助函數：安全地讀取
+      const getValue = (id) => {
+        const el = document.getElementById(id);
+        if (!el) {
+          console.warn(`saveEditableFields: Element with ID '${id}' not found.`);
+          return '';
+        }
+        return el.value;
+      };
+      
+      // 輔助函數：安全地讀取檔案名稱
+      const getFileName = (id, oldFileName) => {
+        const el = document.getElementById(id);
+        if (!el) {
+          console.warn(`saveEditableFields: File input with ID '${id}' not found.`);
+          return oldFileName;
+        }
+        if (el.files && el.files.length > 0) {
+          // 如果有新檔案，就用新檔案的名稱
+          return Array.from(el.files).map(f => f.name).join(', ');
+        }
+        return oldFileName; // 保持舊值
+      };
+
+      const repairStatus = getValue('repairStatus');
+      const receiveDate = getValue('receiveDate');
+      const receiveFee = getValue('receiveFee');
+      const arrivalDate = getValue('arrivalDate');
+      const testDate = getValue('testDate');
+      const testFee = getValue('testFee');
+      const testResult = getValue('testResult');
+      const repairFee = getValue('repairFee');
+      const cleanFee = getValue('cleanFee');
+      const onsideFee = getValue('onsideFee');
+      const maintenanceRecord = getValue('maintenanceRecord');
+      const agreeDate = getValue('agreeDate');
+      const agreeTime = getValue('agreeTime');
+      const agreeNote = getValue('agreeNote');
+      const partsFee = getValue('partsFee');
+      const partsDetail = getFileName('partsDetail', window.currentRecord ? window.currentRecord.partsDetail : '');
+      const totalFee = getValue('totalFee');
+      const businessTax = getValue('businessTax');
+      const totalFeeAfterTax = getValue('totalFeeAfterTax');
+      const discount = getValue('discount');
+      const totalAmount = getValue('totalAmount');
+      const invoiceDate = getValue('invoiceDate');
+      const invoiceNumber = getValue('invoiceNumber');
+      const invoiceTitle = getValue('invoiceTitle');
+      const customerTaxId = getValue('customerTaxId');
+
+      if (receiveDate && testDate && new Date(receiveDate) > new Date(testDate)) {
+        alert('收貨日期不能晚於檢測日期！'); return;
+      }
+      if ((receiveFee && receiveFee < 0) || (testFee && testFee < 0) ||
+          (repairFee && repairFee < 0) || (cleanFee && cleanFee < 0) ||
+          (partsFee && partsFee < 0) || (onsideFee && onsideFee < 0) ||
+          (businessTax && businessTax < 0) || (discount && discount < 0)) {
+        alert('費用不能為負數！'); return;
+      }
+
+      const currentRecord = window.currentRecord;
+      const repairId = currentRecord ? currentRecord.repairId : 'Unknown';
+
+      const changes = [];
+      // (修正) 檢查是否有 '變更'，而不只是 '有值'
+      const addChange = (label, newValue, oldValue) => {
+        if (newValue !== (oldValue || '')) {
+            changes.push(`${label}: ${newValue || '(清空)'}`);
+        }
+      };
+
+      if (currentRecord) {
+          addChange('報修狀態', repairStatus, currentRecord.status);
+          addChange('收貨日', receiveDate, currentRecord.receiveDate);
+          addChange('運費報價', receiveFee, currentRecord.receiveFee);
+          addChange('貨物抵達日', arrivalDate, currentRecord.arrivalDate);
+          addChange('檢測日', testDate, currentRecord.testDate);
+          addChange('檢測費用', testFee, currentRecord.testFee);
+          addChange('檢測結果', testResult, currentRecord.testResult);
+          addChange('維修工資', repairFee, currentRecord.repairFee);
+          addChange('清潔費用', cleanFee, currentRecord.cleanFee);
+          addChange('到府服務費用', onsideFee, currentRecord.onsideFee);
+          addChange('維修記錄', maintenanceRecord, currentRecord.maintenanceRecord);
+          addChange('同意議價日', agreeDate, currentRecord.agreeDate);
+          addChange('同意議價時間', agreeTime, currentRecord.agreeTime);
+          addChange('同意議價說明', agreeNote, currentRecord.agreeNote);
+          addChange('零件費用', partsFee, currentRecord.partsFee);
+          addChange('零件明細', partsDetail, currentRecord.partsDetail);
+          addChange('維修總金額', totalFee, currentRecord.totalFee);
+          addChange('營業稅', businessTax, currentRecord.businessTax);
+          addChange('稅後總金額', totalFeeAfterTax, currentRecord.totalFeeAfterTax);
+          addChange('折扣金額', discount, currentRecord.discount);
+          addChange('實收優惠價', totalAmount, currentRecord.totalAmount);
+          addChange('發票日期', invoiceDate, currentRecord.invoiceDate);
+          addChange('發票號碼', invoiceNumber, currentRecord.invoiceNumber);
+          addChange('發票抬頭', invoiceTitle, currentRecord.invoiceTitle);
+          addChange('客戶方統編', customerTaxId, currentRecord.customerTaxId);
+      } else {
+          // 如果沒有 currentRecord，就當作所有欄位都是新增
+          if (repairStatus) changes.push(`報修狀態: ${repairStatus}`);
+          // ... 略 ...
+      }
+
+
+      if (changes.length > 0) {
+        alert(`維修單號 ${repairId} 已保存以下修改：\n` + changes.join('\n'));
+        if (currentRecord) {
+          currentRecord.status = repairStatus;
+          currentRecord.receiveDate = receiveDate;
+          currentRecord.receiveFee = receiveFee;
+          currentRecord.arrivalDate = arrivalDate;
+          currentRecord.testDate = testDate;
+          currentRecord.testFee = testFee;
+          currentRecord.testResult = testResult;
+          currentRecord.repairFee = repairFee;
+          currentRecord.cleanFee = cleanFee;
+          currentRecord.onsideFee = onsideFee;
+          currentRecord.maintenanceRecord = maintenanceRecord;
+          currentRecord.agreeDate = agreeDate;
+          currentRecord.agreeTime = agreeTime;
+          currentRecord.agreeNote = agreeNote;
+          currentRecord.partsFee = partsFee;
+          currentRecord.partsDetail = partsDetail;
+          currentRecord.totalFee = totalFee;
+          currentRecord.businessTax = businessTax;
+          currentRecord.totalFeeAfterTax = totalFeeAfterTax;
+          currentRecord.discount = discount;
+          currentRecord.totalAmount = totalAmount;
+          currentRecord.invoiceDate = invoiceDate;
+          currentRecord.invoiceNumber = invoiceNumber;
+          currentRecord.invoiceTitle = invoiceTitle;
+          currentRecord.customerTaxId = customerTaxId;
+        }
+
+        // ===== (新增) 純前端 Demo 儲存邏輯 =====
+        // 1. 重新整理查詢結果列表，以顯示更新後的狀態
+        displaySearchResults(window.currentSearchResults);
+
+        // 2. 儲存成功後，自動關閉 Modal 彈窗
+        document.querySelector('.detail-overlay').classList.remove('active');
+        document.querySelector('.detail-modal').classList.remove('active');
+        
+      } else {
+        alert('沒有偵測到任何修改！');
+      }
+    }
+
+    // ===== (新增) 模擬上傳檔案功能 =====
+    function uploadToDrive(buttonElement) {
+      // 往上找到最近的 .upload-section
+      const uploadSection = buttonElement.closest('.upload-section');
+      if (!uploadSection) {
+        console.error('Upload button is not inside an .upload-section');
+        return;
+      }
+      
+      // 在 .upload-section 內部尋找元件
+      const fileInput = uploadSection.querySelector('input[type="file"]');
+      const resultDiv = uploadSection.querySelector('.fileResult');
+      const previewImg = uploadSection.querySelector('.previewImg');
+
+      if (!fileInput || !resultDiv || !previewImg) {
+        console.error('Missing elements in upload-section:', { fileInput, resultDiv, previewImg });
+        alert('上傳元件結構錯誤！');
+        return;
+      }
+
+      if (fileInput.files && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileName = file.name;
+        
+        resultDiv.style.color = "#f3d28c"; // Gold
+        resultDiv.textContent = `模擬上傳中： ${fileName}...`;
+        previewImg.style.display = 'none';
+
+        // 假裝 1 秒後上傳成功
+        setTimeout(() => {
+          resultDiv.style.color = "#4CAF50"; // Green
+          resultDiv.textContent = `模擬成功： ${fileName} (FileID: fake_${Date.now()})`;
+          
+          // (可選) 顯示圖片預覽
+          if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImg.src = e.target.result;
+              previewImg.style.display = "block";
+            }
+            reader.readAsDataURL(file);
+          }
+          
+        }, 1000);
+
+      } else {
+        alert("請先選擇一個檔案！");
+      }
+    }
+  </script>
+</body>
+</html>
