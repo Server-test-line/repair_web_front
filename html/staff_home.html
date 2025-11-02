@@ -1,874 +1,624 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <title>飛騰家電 - 員工管理</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="staff_style.css" />
-  <link rel="stylesheet" href="record_detail.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    input.is-invalid { border-color: #d33 !important; box-shadow: 0 0 0 2px rgba(221,51,51,.12); }
-    .inline-btn { margin-left: 6px; font-size: 12px; cursor: pointer; text-decoration: underline; background: none; border: 0; color: inherit; }
-  </style>
+  <meta charset="UTF-8" />
+  <title>飛騰家電 - 員工管理</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="staff_style.css" />
+  <link rel="stylesheet" href="record_detail.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    input.is-invalid { border-color: #d33 !important; box-shadow: 0 0 0 2px rgba(221,51,51,.12); }
+    .inline-btn { margin-left: 6px; font-size: 12px; cursor: pointer; text-decoration: underline; background: none; border: 0; color: inherit; }
+    /* (新增) 上傳區塊的樣式 */
+    .upload-section { margin-top: 15px; padding: 10px; border: 1px dashed #cba96d; border-radius: 4px; background: #014027; }
+    .upload-section p { margin-bottom: 5px; }
+    .upload-section button { background:#cba96d; color:#014027; border:0; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    .upload-section .fileResult { font-size: 14px; margin-top: 8px; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2 class="page-title">員工管理系統</h2>
+  <div class="container">
+    <h2 class="page-title">員工管理系統</h2>
 
-      <div class="account-bar">
-        <div class="account-left">員工帳號：<span id="staffAccount">載入中...</span></div>
-        <div class="account-right">員工名稱：<span id="staffName">載入中...</span></div>
-      </div>
+      <div class="account-bar">
+        <div class="account-left">員工帳號：<span id="staffAccount">載入中...</span></div>
+        <div class="account-right">員工名稱：<span id="staffName">載入中...</span></div>
+      </div>
 
-      <div class="search-panel">
-      <div class="form-group">
-        <label for="name">顧客姓名：</label>
-        <input type="text" id="name" placeholder="可留空" />
-      </div>
+      <div class="search-panel">
+      <div class="form-group">
+        <label for="name">顧客姓名：</label>
+        <input type="text" id="name" placeholder="可留空" />
+      </div>
 
-      <div class="form-group">
-        <label for="phone">電話號碼：</label>
-        <input type="text" id="phone" placeholder="可留空" />
-      </div>
+      <div class="form-group">
+        <label for="phone">電話號碼：</label>
+        <input type="text" id="phone" placeholder="可留空" />
+      </div>
 
-      <div class="form-group">
-        <label for="repairId">報修單號：</label>
-        <input type="text" id="repairId" placeholder="可留空" />
-      </div>
+      <div class="form-group">
+        <label for="repairId">報修單號：</label>
+        <input type="text" id="repairId" placeholder="可留空" />
+      </div>
 
-      <div class="form-group">
-        <label>日期區間：</label>
-        <input type="date" id="startDate" />
-        <button type="button" class="inline-btn" id="startToggle">手動輸入</button>
-        ~
-        <input type="date" id="endDate" />
-        <button type="button" class="inline-btn" id="endToggle">手動輸入</button>
-      </div>
+      <div class="form-group">
+        <label>日期區間：</label>
+        <input type="date" id="startDate" />
+        <button type="button" class="inline-btn" id="startToggle">手動輸入</button>
+        ~
+        <input type="date" id="endDate" />
+        <button type="button" class="inline-btn" id="endToggle">手動輸入</button>
+      </div>
 
-      <div class="btn-group">
-        <button class="submit-button" onclick="search()">查詢</button>
-        <a href="index.html" class="submit-button">回登入頁</a>
-      </div>
-    </div>
+      <div class="btn-group">
+        <button class="submit-button" onclick="search()">查詢</button>
+        <a href="index.html" class="submit-button">回登入頁</a>
+      </div>
+    </div>
 
-    <div class="result-box" id="result" style="display: none;">
-      <h3>查詢結果：</h3>
-      <div class="record-grid" id="recordGrid"></div>
-    </div>
+    <div class="result-box" id="result" style="display: none;">
+      <h3>查詢結果：</h3>
+      <div class="record-grid" id="recordGrid"></div>
+    </div>
 
-    <!-- 詳細內容 Modal -->
-    <div class="detail-overlay" id="overlay"></div>
-    <div class="detail-modal" id="detailModal">
-      <button class="close-icon" id="close-detail">✖</button>
-      <h3>詳細報修內容</h3>
-      <p>報修單號：</p>
-      <p>會員姓名：</p>
-      <p>電話號碼：</p>
-      <p>報修產品：</p>
-      <p>產品序號：</p>
-      <p>購買地點：</p>
-      <p>購買價格：</p>
-      <p>購買日期：</p>
-      <p>報修日期：</p>
-      <p>報修方式：</p>
-      <p>故障描述：</p>
-      <p>報修聯絡內容：</p>
-      
-      <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
-        <h3>可編輯資訊：</h3>
-        <p>收貨日：
-          <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-        </p>
-        <p>收貨費用：
-          <input type="number" id="receiveFee" placeholder="輸入金額" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-        </p>
-        <p>檢測日：
-          <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-        </p>
-        <p>檢測費用：
-          <input type="number" id="testFee" placeholder="輸入金額" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-        </p>
-        <div style="margin-top: 20px;">
-          <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="detail-overlay" id="overlay"></div>
+    <div class="detail-modal" id="detailModal">
+          </div>
+  </div>
 
-  <script>
-    // ===== 日期欄位切換：日曆 <-> 手動輸入 =====
-    function toggleDateInput(id, toggleBtnId) {
-      const el = document.getElementById(id);
-      const btn = document.getElementById(toggleBtnId);
-      btn.addEventListener('click', () => {
-        if (el.type === 'date') {
-          const current = el.value;
-          el.type = 'text';
-          el.placeholder = 'YYYY-MM-DD 或 2025/8/3';
-          el.inputMode = 'numeric';
-          el.value = current;
-          btn.textContent = '選日曆';
-        } else {
-          const normalized = normalizeDateLike(el.value);
-          if (normalized) el.value = normalized;
-          el.classList.remove('is-invalid');
-          el.type = 'date';
-          el.removeAttribute('placeholder');
-          el.removeAttribute('inputmode');
-          btn.textContent = '手動輸入';
-        }
-      });
-      el.addEventListener('blur', () => {
-        if (el.type === 'text' && el.value) {
-          const iso = normalizeDateLike(el.value);
-          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
-          else { el.classList.add('is-invalid'); }
-        }
-      });
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && el.type === 'text') {
-          const iso = normalizeDateLike(el.value);
-          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
-          else { el.classList.add('is-invalid'); }
-        }
-      });
-      el.addEventListener('input', () => el.classList.remove('is-invalid'));
-    }
-
-    function normalizeDateLike(input) {
-      if (!input) return '';
-      const s = String(input).trim().replace(/\./g, '/');
-      let m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
-      if (m) return toISO(+m[1], +m[2], +m[3]);
-      m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
-      if (m) return toISO(+m[1], +m[2], +m[3]);
-      m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
-      if (m) return toISO(+m[3], +m[1], +m[2]);
-      const d = new Date(s);
-      if (!isNaN(d.getTime())) return toISO(d.getFullYear(), d.getMonth() + 1, d.getDate());
-      return '';
-    }
-    function toISO(y, m, d) {
-      const dt = new Date(y, m - 1, d);
-      if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return '';
-      return `${y.toString().padStart(4, '0')}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
-    }
-    toggleDateInput('startDate', 'startToggle');
-    toggleDateInput('endDate', 'endToggle');
-
-    // ===== 自動計算總金額 =====
-    function autoCalculateTotalFee() {
-      const getNumber = (id) => Number(document.getElementById(id)?.value) || 0;
-
-      // 計算維修總金額（稅前）
-      const total = getNumber("receiveFee") + getNumber("testFee") +
-                    getNumber("repairFee") + getNumber("cleanFee") +
-                    getNumber("partsFee") + getNumber("onsideFee");
-
-      document.getElementById("totalFee").value = total;
-
-      // 計算營業稅和稅後總金額
-      const businessTax = getNumber("businessTax");
-      const totalAfterTax = total + businessTax;
-
-      document.getElementById("totalFeeAfterTax").value = totalAfterTax;
-
-      // 計算實收優惠價（以稅後總金額為基準）
-      const discount = getNumber("discount");
-      const totalAmount = totalAfterTax - discount;
-
-      document.getElementById("totalAmount").value = totalAmount >= 0 ? totalAmount : 0;
-    }
-
-    // ===== 編輯區塊切換功能 =====
-    let currentEditMode = "repair-content"; // 預設為報修內容
-
-    function switchEditTab(tabName) {
-      const tabs = {
-        "repair-content": document.getElementById("repair-content-tab"),
-        "inspection-content": document.getElementById("inspection-content-tab"),
-        "maintenance-content": document.getElementById("maintenance-content-tab"),
-        "quotation-process": document.getElementById("quotation-process-tab"),
-        "quotation-sheet": document.getElementById("quotation-sheet-tab"),
-        "invoice": document.getElementById("invoice-tab")
-      };
-
-      const sections = {
-        "repair-content": document.getElementById("repair-content-section"),
-        "inspection-content": document.getElementById("inspection-content-section"),
-        "maintenance-content": document.getElementById("maintenance-content-section"),
-        "quotation-process": document.getElementById("quotation-process-section"),
-        "quotation-sheet": document.getElementById("quotation-sheet-section"),
-        "invoice": document.getElementById("invoice-section")
-      };
-
-      // 重置所有標籤為 inactive 狀態
-      Object.values(tabs).forEach(tab => {
-        if (tab) {
-          tab.className = "edit-tab-button inactive";
-          tab.style.color = "#797777";
-          tab.style.borderBottom = "2px solid transparent";
-        }
-      });
-
-      // 隱藏所有區塊
-      Object.values(sections).forEach(section => {
-        if (section) {
-          section.style.display = "none";
-        }
-      });
-
-      // 激活選中的標籤和區塊
-      if (tabs[tabName] && sections[tabName]) {
-        tabs[tabName].className = "edit-tab-button active";
-        tabs[tabName].style.color = "#f3d28c";
-        tabs[tabName].style.borderBottom = "2px solid #cba96d";
-        sections[tabName].style.display = "block";
-        currentEditMode = tabName;
-      }
-    }
-
-    // 綁定切換事件
+  <script>
+    // ===== (新增) 模擬登入資訊 =====
     document.addEventListener('DOMContentLoaded', function() {
-      const repairContentTab = document.getElementById("repair-content-tab");
-      const inspectionContentTab = document.getElementById("inspection-content-tab");
-      const maintenanceContentTab = document.getElementById("maintenance-content-tab");
-      const quotationProcessTab = document.getElementById("quotation-process-tab");
-      const quotationSheetTab = document.getElementById("quotation-sheet-tab");
-      const invoiceTab = document.getElementById("invoice-tab");
-
-      if (repairContentTab) repairContentTab.addEventListener("click", () => switchEditTab("repair-content"));
-      if (inspectionContentTab) inspectionContentTab.addEventListener("click", () => switchEditTab("inspection-content"));
-      if (maintenanceContentTab) maintenanceContentTab.addEventListener("click", () => switchEditTab("maintenance-content"));
-      if (quotationProcessTab) quotationProcessTab.addEventListener("click", () => switchEditTab("quotation-process"));
-      if (quotationSheetTab) quotationSheetTab.addEventListener("click", () => switchEditTab("quotation-sheet"));
-      if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
+      document.getElementById('staffAccount').textContent = 'staff_demo';
+      document.getElementById('staffName').textContent = '前端測試員';
     });
+    
+    // ===== 日期欄位切換：日曆 <-> 手動輸入 =====
+    function toggleDateInput(id, toggleBtnId) {
+      const el = document.getElementById(id);
+      const btn = document.getElementById(toggleBtnId);
+      btn.addEventListener('click', () => {
+        if (el.type === 'date') {
+          const current = el.value;
+          el.type = 'text';
+          el.placeholder = 'YYYY-MM-DD 或 2025/8/3';
+          el.inputMode = 'numeric';
+          el.value = current;
+          btn.textContent = '選日曆';
+        } else {
+          const normalized = normalizeDateLike(el.value);
+          if (normalized) el.value = normalized;
+          el.classList.remove('is-invalid');
+          el.type = 'date';
+          el.removeAttribute('placeholder');
+          el.removeAttribute('inputmode');
+          btn.textContent = '手動輸入';
+        }
+      });
+      el.addEventListener('blur', () => {
+        if (el.type === 'text' && el.value) {
+          const iso = normalizeDateLike(el.value);
+          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
+          else { el.classList.add('is-invalid'); }
+        }
+      });
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && el.type === 'text') {
+          const iso = normalizeDateLike(el.value);
+          if (iso) { el.value = iso; el.classList.remove('is-invalid'); }
+          else { el.classList.add('is-invalid'); }
+        }
+      });
+      el.addEventListener('input', () => el.classList.remove('is-invalid'));
+    }
 
-    // ===== 查詢 =====
-    function search() {
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const repairId = document.getElementById("repairId").value.trim();
-      const startEl = document.getElementById("startDate");
-      const endEl = document.getElementById("endDate");
+    function normalizeDateLike(input) {
+      if (!input) return '';
+      const s = String(input).trim().replace(/\./g, '/');
+      let m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+      if (m) return toISO(+m[1], +m[2], +m[3]);
+      m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (m) return toISO(+m[1], +m[2], +m[3]);
+      m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+      if (m) return toISO(+m[3], +m[1], +m[2]);
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) return toISO(d.getFullYear(), d.getMonth() + 1, d.getDate());
+      return '';
+    }
+    function toISO(y, m, d) {
+      const dt = new Date(y, m - 1, d);
+      if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return '';
+      return `${y.toString().padStart(4, '0')}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    }
+    toggleDateInput('startDate', 'startToggle');
+    toggleDateInput('endDate', 'endToggle');
 
-      if (startEl.type === 'text' && startEl.value) {
-        const iso = normalizeDateLike(startEl.value);
-        if (iso) startEl.value = iso;
-      }
-      if (endEl.type === 'text' && endEl.value) {
-        const iso = normalizeDateLike(endEl.value);
-        if (iso) endEl.value = iso;
-      }
+    // ===== 自動計算總金額 =====
+    function autoCalculateTotalFee() {
+      const getNumber = (id) => Number(document.getElementById(id)?.value) || 0;
 
-      const start = startEl.value;
-      const end = endEl.value;
+      // 計算維修總金額（稅前）
+      const total = getNumber("receiveFee") + getNumber("testFee") +
+                    getNumber("repairFee") + getNumber("cleanFee") +
+                    getNumber("partsFee") + getNumber("onsideFee");
 
-      if ((start && !end) || (!start && end)) {
-        alert("請同時填寫起始與結束日期，或兩者皆留空。");
-        return;
-      }
-      if (start && end) {
-        const sd = new Date(start);
-        const ed = new Date(end);
-        if (sd > ed) {
-          alert("起始日期不可晚於結束日期。");
-          return;
-        }
-      }
+      document.getElementById("totalFee").value = total;
 
-      if (name || phone || repairId || (start && end)) {
-        const mockData = generateMockData();
-        displaySearchResults(mockData);
-      } else {
-        alert("請輸入至少一個查詢條件！");
-      }
-    }
+      // 計算營業稅和稅後總金額
+      const businessTax = getNumber("businessTax");
+      const totalAfterTax = total + businessTax;
 
-    // ===== 模擬資料（示範各種狀態） =====
-    function generateMockData() {
-      return [
-        {
-          repairId: 'FT20250820004',
-          productSerial: 'FT004',
-          productName: '微波爐',
-          repairDate: '2025-08-20',
-          status: '議價',
-          customerName: '張小芬',
-          phone: '0965432187',
-          purchaseDate: '2024-09-10',
-          location: '高雄店',
-          price: '1800',
-          repairMethod: '電話報修',
-          description: '按下開始鍵沒有反應',
-          contactContent: '客戶來電說按下開始鍵沒有反應',
-          receiveDate: '',
-          receiveFee: '',
-          testDate: '',
-          testFee: ''
-        },
-        {
-          repairId: 'FT20250815003',
-          productSerial: 'FT003',
-          productName: '烤箱',
-          repairDate: '2025-08-15',
-          status: '維修中',
-          customerName: '李大華',
-          phone: '0987654321',
-          purchaseDate: '2024-10-20',
-          location: '台中店',
-          price: '4500',
-          repairMethod: '線上報修',
-          description: '溫度控制異常',
-          contactContent: '客戶反映烤箱溫度不準確',
-          receiveDate: '2025-08-16',
-          receiveFee: '250',
-          testDate: '',
-          testFee: ''
-        },
-        {
-          repairId: 'FT20250810002',
-          productSerial: 'FT002',
-          productName: '電鍋',
-          repairDate: '2025-08-10',
-          status: '購買新品',
-          customerName: '王小明',
-          phone: '0912345678',
-          purchaseDate: '2024-11-15',
-          location: '新竹店',
-          price: '3200',
-          repairMethod: '電話報修',
-          description: '蒸氣閥故障',
-          contactContent: '客戶來電說蒸氣無法正常排出',
-          receiveDate: '2025-08-11',
-          receiveFee: '150',
-          testDate: '2025-08-12',
-          testFee: '100'
-        },
-        {
-          repairId: 'FT20250807001',
-          productSerial: 'FT001',
-          productName: '鍋',
-          repairDate: '2025-08-05',
-          status: '產品送回',
-          customerName: '王小明',
-          phone: '0912345678',
-          purchaseDate: '2024-12-01',
-          location: '台北店',
-          price: '2500',
-          repairMethod: 'APP報修',
-          description: '無法正常加熱',
-          contactContent: '客戶反映使用時無反應',
-          receiveDate: '2025-08-06',
-          receiveFee: '200',
-          testDate: '2025-08-07',
-          testFee: '150'
-        },
-        {
-          repairId: 'FT20250805005',
-          productSerial: 'FT005',
-          productName: '電子鍋',
-          repairDate: '2025-08-05',
-          status: '送貨',
-          customerName: '陳小美',
-          phone: '0923456789',
-          purchaseDate: '2024-11-20',
-          location: '桃園店',
-          price: '2800',
-          repairMethod: '電話報修',
-          description: '內膽損壞',
-          contactContent: '客戶購買新品，正在安排送貨',
-          receiveDate: '2025-08-06',
-          receiveFee: '150',
-          testDate: '2025-08-07',
-          testFee: '100'
-        },
-        {
-          repairId: 'FT20250803006',
-          productSerial: 'FT006',
-          productName: '洗衣機',
-          repairDate: '2025-08-03',
-          status: '結案',
-          customerName: '林小華',
-          phone: '0934567890',
-          purchaseDate: '2024-10-15',
-          location: '台南店',
-          price: '15000',
-          repairMethod: 'LINE聯絡',
-          description: '排水異常',
-          contactContent: '已完成維修並送回客戶，案件結案',
-          receiveDate: '2025-08-04',
-          receiveFee: '300',
-          testDate: '2025-08-05',
-          testFee: '200'
-        }
-      ];
-    }
+      document.getElementById("totalFeeAfterTax").value = totalAfterTax;
 
-    // ===== 進度條（3 行版） =====
-    const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價'];  // 1~5
-    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                      // 顯示數字 6
-    const DELIVERY_STEP = '送貨';                                               // 顯示數字 7（購買新品後）
-    const FINAL_STEP = '產品送回';                                              // 顯示數字 7（維修中後）
-    const CLOSE_STEP = '結案';                                                  // 顯示數字 8（最終狀態）
+      // 計算實收優惠價（以稅後總金額為基準）
+      const discount = getNumber("discount");
+      const totalAmount = totalAfterTax - discount;
 
-    const STATUS_MAP = {
-      '已完成報修': '報修成立',
-      '已安排物流收貨': '已派物流前往取貨',
-      '檢測中': '檢測',
-      '報價': '報價',
-      '議價': '議價',
-      '購買新品': '購買新品',
-      '報廢': '報廢',
-      '維修中': '維修中',
-      '送貨': '送貨',
-      '產品送回': '產品送回',
-      '結案': '結案'
-    };
-    const normalizeStatus = s => STATUS_MAP[s] || s;
+      document.getElementById("totalAmount").value = totalAmount >= 0 ? totalAmount : 0;
+    }
 
-    function generateStatusProgress(currentStatusRaw) {
-      const current = normalizeStatus(currentStatusRaw);
+    // ===== 編輯區塊切換功能 =====
+    let currentEditMode = "repair-content"; // 預設為報修內容
 
-      const inMainIdx   = MAIN_STEPS.indexOf(current);
-      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
-      const inDelivery  = (current === DELIVERY_STEP);
-      const inFinal     = (current === FINAL_STEP);
-      const inClose     = (current === CLOSE_STEP);
+    function switchEditTab(tabName) {
+      const tabs = {
+        'repair-content': document.getElementById("repair-content-tab"),
+        'inspection-content': document.getElementById("inspection-content-tab"),
+        'maintenance-content': document.getElementById("maintenance-content-tab"),
+        'quotation-process': document.getElementById("quotation-process-tab"),
+        'invoice': document.getElementById("invoice-tab")
+      };
 
-      // 主線：若已進入分支、送貨、最終或結案，主線停在「議價」
-      const mainActiveIdx = MAIN_STEPS.includes(current) ? inMainIdx : MAIN_STEPS.length;
-      // === 上排（主線 1~5） ===
-      let mainHTML = '<div class="track main">';
-      MAIN_STEPS.forEach((step, i) => {
-        let cls = 'node';
-        if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
-        else if (mainActiveIdx === i)               cls += ' active';
-        mainHTML += `<div class="${cls}"><div class="dot">${i+1}</div><div class="label">${step}</div></div>`;
-      });
-      mainHTML += '</div>';
+      const sections = {
+        'repair-content': document.getElementById("repair-content-section"),
+        'inspection-content': document.getElementById("inspection-content-section"),
+        'maintenance-content': document.getElementById("maintenance-content-section"),
+        'quotation-process': document.getElementById("quotation-process-section"),
+        'invoice': document.getElementById("invoice-section")
+      };
 
-      // === 中排（分支 3 選一，數字固定 6） ===
-      let branchHTML = '<div class="track branch">';
-      BRANCH_CHOICES.forEach((step, i) => {
-        let cls = 'node';
-        if (inBranchIdx === i) cls += ' active';
-        // 若已到送貨、最終或結案，將對應的分支標記為 completed
-        if ((inDelivery && step === '購買新品') ||
-            (inFinal && step === '維修中') ||
-            (inClose && (step === '購買新品' || step === '維修中' || step === '報廢'))) cls += ' completed';
-        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
-      });
-      branchHTML += '</div>';
+      // 重置所有標籤為 inactive 狀態
+      Object.values(tabs).forEach(tab => {
+        if (tab) {
+          tab.className = "edit-tab-button inactive";
+          tab.style.color = "#797777";
+          tab.style.borderBottom = "2px solid transparent";
+        }
+      });
 
-      // === 下排（數字 7，送貨在「購買新品」下方，產品送回在「維修中」下方，報廢下方空白） ===
-      let finalHTML = '<div class="track final">';
-      // 送貨節點（在第一欄，購買新品下方）
-      let deliveryCls = 'node';
-      if (inDelivery) deliveryCls += ' active';
-      if (inClose) deliveryCls += ' completed';
-      finalHTML += `<div class="${deliveryCls}"><div class="dot">7</div><div class="label">${DELIVERY_STEP}</div></div>`;
-      // 空白節點（在第二欄，報廢下方）
-      finalHTML += `<div class="node spacer"></div>`;
-      // 產品送回節點（在第三欄，維修中下方）
-      let finalCls = 'node is-final';
-      if (inFinal) finalCls += ' active';
-      if (inClose) finalCls += ' completed';
-      finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
-      finalHTML += '</div>';
+      // 隱藏所有區塊
+      Object.values(sections).forEach(section => {
+        if (section) {
+          section.style.display = "none";
+        }
+      });
 
-      // === 第四排（數字 8，結案 - 只顯示一個在中間） ===
-      let closeHTML = '<div class="track close">';
-      closeHTML += `<div class="node spacer"></div>`;
-      let closeCls = 'node is-final';
-      if (inClose) closeCls += ' active';
-      closeHTML += `<div class="${closeCls}"><div class="dot">8</div><div class="label">${CLOSE_STEP}</div></div>`;
-      closeHTML += `<div class="node spacer"></div>`;
-      closeHTML += '</div>';
+      // 激活選中的標籤和區塊
+      if (tabs[tabName] && sections[tabName]) {
+        tabs[tabName].className = "edit-tab-button active";
+        tabs[tabName].style.color = "#f3d28c";
+        tabs[tabName].style.borderBottom = "2px solid #cba96d";
+        sections[tabName].style.display = "block";
+        currentEditMode = tabName;
+      }
+    }
 
-      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}<div class="final-to-close-connector"></div>${closeHTML}</div>`;
-    }
+    // (移除) 此處的 DOMContentLoaded 事件綁定是多餘的，
+    // 因為元素在 Modal 顯示時才動態產生，綁定會失效。
+    // 正確的綁定已移至 updateModalContent 函數內部。
 
-    // ===== 顯示查詢結果 =====
-    function displaySearchResults(data) {
-      const sortedData = data.sort((a, b) => b.repairId.localeCompare(a.repairId));
-      const recordGrid = document.getElementById('recordGrid');
-      recordGrid.innerHTML = '';
+    // ===== 查詢 =====
+    function search() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const repairId = document.getElementById("repairId").value.trim();
+      const startEl = document.getElementById("startDate");
+      const endEl = document.getElementById("endDate");
 
-      sortedData.forEach((record, index) => {
-        const infoBox = document.createElement('div');
-        infoBox.className = 'info-box';
-        infoBox.innerHTML = `
-          <p>報修單號：${record.repairId}</p>
-          <p>會員姓名：${record.customerName}</p>
-          <p>電話號碼：${record.phone}</p>
-          <p>報修產品：${record.productName}</p>
-          <p>產品序號：${record.productSerial}</p>
-          <p>報修日期：${record.repairDate}</p>
-          <p>報修狀態：${record.status}</p>
-          ${generateStatusProgress(record.status)}
-          <button class="submit-button show-detail" data-index="${index}">查看所有內容</button>
-        `;
-        recordGrid.appendChild(infoBox);
-      });
+      if (startEl.type === 'text' && startEl.value) {
+        const iso = normalizeDateLike(startEl.value);
+        if (iso) startEl.value = iso;
+      }
+      if (endEl.type === 'text' && endEl.value) {
+        const iso = normalizeDateLike(endEl.value);
+        if (iso) endEl.value = iso;
+      }
 
-      window.currentSearchResults = sortedData;
-      document.getElementById("result").style.display = "block";
-      bindDetailButtons();
-    }
+      const start = startEl.value;
+      const end = endEl.value;
 
-    // ===== 詳細內容 Modal =====
-    document.addEventListener('DOMContentLoaded', function() {
-      const overlay = document.querySelector('.detail-overlay');
-      const modal = document.querySelector('.detail-modal');
-      const closeBtn = document.getElementById('close-detail');
+      if ((start && !end) || (!start && end)) {
+        alert("請同時填寫起始與結束日期，或兩者皆留空。");
+        return;
+      }
+      if (start && end) {
+        const sd = new Date(start);
+        const ed = new Date(end);
+        if (sd > ed) {
+          alert("起始日期不可晚於結束日期。");
+          return;
+        }
+      }
 
-      closeBtn.addEventListener('click', () => {
-        overlay.classList.remove('active');
-        modal.classList.remove('active');
-      });
-      overlay.addEventListener('click', () => {
-        overlay.classList.remove('active');
-        modal.classList.remove('active');
-      });
-    });
+      if (name || phone || repairId || (start && end)) {
+        const mockData = generateMockData();
+        displaySearchResults(mockData);
+      } else {
+        alert("請輸入至少一個查詢條件！");
+      }
+    }
 
-    function bindDetailButtons() {
-      const detailBtns = document.querySelectorAll('.show-detail');
-      const overlay = document.querySelector('.detail-overlay');
-      const modal = document.querySelector('.detail-modal');
+    // ===== 模擬資料（示範各種狀態） =====
+    function generateMockData() {
+      return [
+        {
+          repairId: 'FT20250820004',
+          productSerial: 'FT004',
+          productName: '微波爐',
+          repairDate: '2025-08-20',
+          status: '議價',
+          customerName: '張小芬',
+          phone: '0965432187',
+          purchaseDate: '2024-09-10',
+          location: '高雄店',
+          price: '1800',
+          repairMethod: '電話報修',
+          description: '按下開始鍵沒有反應',
+          contactContent: '客戶來電說按下開始鍵沒有反應',
+          receiveDate: '',
+          receiveFee: '',
+          testDate: '',
+          testFee: ''
+        },
+        {
+          repairId: 'FT20250815003',
+          productSerial: 'FT003',
+          productName: '烤箱',
+          repairDate: '2025-08-15',
+          status: '維修中',
+          customerName: '李大華',
+          phone: '0987654321',
+          purchaseDate: '2024-10-20',
+          location: '台中店',
+          price: '4500',
+          repairMethod: '線上報修',
+          description: '溫度控制異常',
+          contactContent: '客戶反映烤箱溫度不準確',
+          receiveDate: '2025-08-16',
+          receiveFee: '250',
+          testDate: '2025-08-17',
+          testFee: '300',
+          testResult: '溫度感測器故障',
+          maintenanceRecord: '更換溫度感測器'
+        },
+        {
+          repairId: 'FT20250810002',
+          productSerial: 'FT002',
+          productName: '電鍋',
+          repairDate: '2025-08-10',
+          status: '購買新品',
+          customerName: '王小明',
+          phone: '0912345678',
+          purchaseDate: '2024-11-15',
+          location: '新竹店',
+          price: '3200',
+          repairMethod: '電話報修',
+          description: '蒸氣閥故障',
+          contactContent: '客戶來電說蒸氣無法正常排出',
+          receiveDate: '2025-08-11',
+          receiveFee: '150',
+          testDate: '2025-08-12',
+          testFee: '100'
+        },
+        {
+          repairId: 'FT20250807001',
+          productSerial: 'FT001',
+          productName: '鍋',
+          repairDate: '2025-08-05',
+          status: '產品送回',
+          customerName: '王小明',
+          phone: '0912345678',
+          purchaseDate: '2024-12-01',
+          location: '台北店',
+          price: '2500',
+          repairMethod: 'APP報修',
+          description: '無法正常加熱',
+          contactContent: '客戶反映使用時無反應',
+          receiveDate: '2025-08-06',
+          receiveFee: '200',
+          testDate: '2025-08-07',
+          testFee: '150'
+        },
+        {
+          repairId: 'FT20250805005',
+          productSerial: 'FT005',
+          productName: '電子鍋',
+          repairDate: '2025-08-05',
+          status: '送貨',
+          customerName: '陳小美',
+          phone: '0923456789',
+          purchaseDate: '2024-11-20',
+          location: '桃園店',
+          price: '2800',
+          repairMethod: '電話報修',
+          description: '內膽損壞',
+          contactContent: '客戶購買新品，正在安排送貨',
+          receiveDate: '2025-08-06',
+          receiveFee: '150',
+          testDate: '2025-08-07',
+          testFee: '100'
+        },
+        {
+          repairId: 'FT20250803006',
+          productSerial: 'FT006',
+          productName: '洗衣機',
+          repairDate: '2025-08-03',
+          status: '結案',
+          customerName: '林小華',
+          phone: '0934567890',
+          purchaseDate: '2024-10-15',
+          location: '台南店',
+          price: '15000',
+          repairMethod: 'LINE聯絡',
+          description: '排水異常',
+          contactContent: '已完成維修並送回客戶，案件結案',
+          receiveDate: '2025-08-04',
+          receiveFee: '300',
+          testDate: '2025-08-05',
+          testFee: '200',
+          invoiceDate: '2025-08-06',
+          invoiceNumber: 'XY-88888888',
+          invoiceTitle: '林小華',
+          customerTaxId: ''
+        }
+      ];
+    }
 
-      detailBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const index = parseInt(btn.getAttribute('data-index'));
-          const record = window.currentSearchResults[index];
-          updateModalContent(record);
-          overlay.classList.add('active');
-          modal.classList.add('active');
-          loadEditableFields(record);
-        });
-      });
-    }
+    // ===== 進度條（3 行版） =====
+    const MAIN_STEPS = ['報修成立', '已派物流前往取貨', '檢測', '報價', '議價'];  // 1~5
+    const BRANCH_CHOICES = ['購買新品', '報廢', '維修中'];                      // 顯示數字 6
+    const DELIVERY_STEP = '送貨';                                               // 顯示數字 7（購買新品後）
+    const FINAL_STEP = '產品送回';                                              // 顯示數字 7（維修中後）
+    const CLOSE_STEP = '結案';                                                  // 顯示數字 8（最終狀態）
 
-    function updateModalContent(record) {
-      const modal = document.querySelector('.detail-modal');
-      modal.innerHTML = `
-        <button class="close-icon" id="close-detail">✖</button>
-        <h3>詳細報修內容</h3>
-        <p>報修單號：${record.repairId}</p>
-        <p>會員姓名：${record.customerName}</p>
-        <p>電話號碼：${record.phone}</p>
-        <p>報修產品：${record.productName}</p>
-        <p>產品序號：${record.productSerial}</p>
-        <p>購買地點：${record.location}</p>
-        <p>購買價格：${record.price}</p>
-        <p>購買日期：${record.purchaseDate}</p>
-        <p>報修日期：${record.repairDate}</p>
-        <p>報修方式：${record.repairMethod}</p>
-        <p>故障描述：${record.description}</p>
-        <p>報修聯絡內容：${record.contactContent}</p>
-        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
-          <div class="edit-tabs" style="display: flex; justify-content: space-between; width: 100%; margin: 0 0 20px; border-bottom: 1px solid #ebd7b5;">
-            <button class="edit-tab-button active" id="repair-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修內容</button>
-            <button class="edit-tab-button inactive" id="inspection-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">檢測內容</button>
-            <button class="edit-tab-button inactive" id="maintenance-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">維修內容</button>
-            <button class="edit-tab-button inactive" id="quotation-process-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價過程</button>
-            <button class="edit-tab-button inactive" id="quotation-sheet-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價單</button>
-            <button class="edit-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">發票</button>
-          </div>
-          <h3>可編輯資訊：</h3>
+    const STATUS_MAP = {
+      '已完成報修': '報修成立',
+      '已安排物流收貨': '已派物流前往取貨',
+      '檢測中': '檢測',
+      '報價': '報價',
+      '議價': '議價',
+      '購買新品': '購買新品',
+      '報廢': '報廢',
+      '維修中': '維修中',
+      '送貨': '送貨',
+      '產品送回': '產品送回',
+      '結案': '結案'
+    };
+    const normalizeStatus = s => STATUS_MAP[s] || s;
 
-          <!-- 第一組：報修內容 -->
-          <div id="repair-content-section" class="edit-section">
-            <p>報修狀態：
-              <select id="repairStatus" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;">
-                <option value="報修成立">報修成立</option>
-                <option value="已派物流前往取貨">已派物流前往取貨</option>
-                <option value="檢測">檢測</option>
-                <option value="報價">報價</option>
-                <option value="議價">議價</option>
-                <option value="購買新品">購買新品</option>
-                <option value="報廢">報廢</option>
-                <option value="維修中">維修中</option>
-                <option value="送貨">送貨</option>
-                <option value="產品送回">產品送回</option>
-                <option value="結案">結案</option>
-              </select>
+    function generateStatusProgress(currentStatusRaw) {
+      const current = normalizeStatus(currentStatusRaw);
+
+      const inMainIdx   = MAIN_STEPS.indexOf(current);
+      const inBranchIdx = BRANCH_CHOICES.indexOf(current);
+      const inDelivery  = (current === DELIVERY_STEP);
+      const inFinal     = (current === FINAL_STEP);
+      const inClose     = (current === CLOSE_STEP);
+
+      // 主線：若已進入分支、送貨、最終或結案，主線停在「議價」
+      const mainActiveIdx = MAIN_STEPS.includes(current) ? inMainIdx : MAIN_STEPS.length;
+      // === 上排（主線 1~5） ===
+      let mainHTML = '<div class="track main">';
+      MAIN_STEPS.forEach((step, i) => {
+        let cls = 'node';
+        if (mainActiveIdx > i && mainActiveIdx >= 0) cls += ' completed';
+        else if (mainActiveIdx === i)               cls += ' active';
+        mainHTML += `<div class="${cls}"><div class="dot">${i+1}</div><div class="label">${step}</div></div>`;
+      });
+      mainHTML += '</div>';
+
+      // === 中排（分支 3 選一，數字固定 6） ===
+      let branchHTML = '<div class="track branch">';
+      BRANCH_CHOICES.forEach((step, i) => {
+        let cls = 'node';
+        if (inBranchIdx === i) cls += ' active';
+        // 若已到送貨、最終或結案，將對應的分支標記為 completed
+        if ((inDelivery && step === '購買新品') ||
+            (inFinal && step === '維修中') ||
+            (inClose && (step === '購買新品' || step === '維修中' || step === '報廢'))) cls += ' completed';
+        branchHTML += `<div class="${cls}"><div class="dot">6</div><div class="label">${step}</div></div>`;
+      });
+      branchHTML += '</div>';
+
+      // === 下排（數字 7，送貨在「購買新品」下方，產品送回在「維修中」下方，報廢下方空白） ===
+      let finalHTML = '<div class="track final">';
+      // 送貨節點（在第一欄，購買新品下方）
+      let deliveryCls = 'node';
+      if (inDelivery) deliveryCls += ' active';
+      if (inClose) deliveryCls += ' completed';
+      finalHTML += `<div class="${deliveryCls}"><div class="dot">7</div><div class="label">${DELIVERY_STEP}</div></div>`;
+      // 空白節點（在第二欄，報廢下方）
+      finalHTML += `<div class="node spacer"></div>`;
+      // 產品送回節點（在第三欄，維修中下方）
+      let finalCls = 'node is-final';
+      if (inFinal) finalCls += ' active';
+      if (inClose) finalCls += ' completed';
+      finalHTML += `<div class="${finalCls}"><div class="dot">7</div><div class="label">${FINAL_STEP}</div></div>`;
+      finalHTML += '</div>';
+
+      // === 第四排（數字 8，結案 - 只顯示一個在中間） ===
+      let closeHTML = '<div class="track close">';
+      closeHTML += `<div class="node spacer"></div>`;
+      let closeCls = 'node is-final';
+      if (inClose) closeCls += ' active';
+      closeHTML += `<div class="${closeCls}"><div class="dot">8</div><div class="label">${CLOSE_STEP}</div></div>`;
+      closeHTML += `<div class="node spacer"></div>`;
+      closeHTML += '</div>';
+
+      return `<div class="three-track-progress">${mainHTML}<div class="branch-connector"></div>${branchHTML}${finalHTML}<div class="final-to-close-connector"></div>${closeHTML}</div>`;
+    }
+
+    // ===== 顯示查詢結果 =====
+    function displaySearchResults(data) {
+      // (修正) 檢查 data 是否存在，如果不存在 (例如從 saveEditableFields 呼叫時)
+      // 就使用全域的 currentSearchResults
+      const validData = data || window.currentSearchResults || [];
+      const sortedData = validData.sort((a, b) => b.repairId.localeCompare(a.repairId));
+      const recordGrid = document.getElementById('recordGrid');
+      recordGrid.innerHTML = '';
+
+      sortedData.forEach((record, index) => {
+        const infoBox = document.createElement('div');
+        infoBox.className = 'info-box';
+        infoBox.innerHTML = `
+          <p>報修單號：${record.repairId}</p>
+          <p>會員姓名：${record.customerName}</p>
+          <p>電話號碼：${record.phone}</p>
+          <p>報修產品：${record.productName}</p>
+          <p>產品序號：${record.productSerial}</p>
+          <p>報修日期：${record.repairDate}</p>
+          <p>報修狀態：${record.status}</p>
+          ${generateStatusProgress(record.status)}
+          <button class="submit-button show-detail" data-index="${index}">查看所有內容</button>
+        `;
+        recordGrid.appendChild(infoBox);
+      });
+
+      window.currentSearchResults = sortedData;
+      document.getElementById("result").style.display = "block";
+      bindDetailButtons();
+    }
+
+    // ===== 詳細內容 Modal =====
+    // (移除) 此處的 DOMContentLoaded 事件綁定是多餘的
+    
+    function bindDetailButtons() {
+      const detailBtns = document.querySelectorAll('.show-detail');
+      const overlay = document.querySelector('.detail-overlay');
+      const modal = document.querySelector('.detail-modal');
+
+      detailBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          const record = window.currentSearchResults[index];
+          updateModalContent(record);
+          overlay.classList.add('active');
+          modal.classList.add('active');
+          loadEditableFields(record);
+        });
+      });
+    }
+
+    // (*** 重大修正：補齊所有缺失的欄位 ***)
+    function updateModalContent(record) {
+      const modal = document.querySelector('.detail-modal');
+      modal.innerHTML = `
+        <button class="close-icon" id="close-detail">✖</button>
+        <h3>詳細報修內容</h3>
+        <p>報修單號：${record.repairId}</p>
+        <p>會員姓名：${record.customerName}</p>
+        <p>電話號碼：${record.phone}</p>
+        <p>報修產品：${record.productName}</p>
+        <p>產品序號：${record.productSerial}</p>
+        <p>購買地點：${record.location}</p>
+        <p>購買價格：${record.price}</p>
+        <p>購買日期：${record.purchaseDate}</p>
+        <p>報修日期：${record.repairDate}</p>
+        <p>報修方式：${record.repairMethod}</p>
+        <p>故障描述：${record.description}</p>
+        <p>報修聯絡內容：${record.contactContent}</p>
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #cba96d;">
+          <div class="edit-tabs" style="display: flex; justify-content: space-between; width: 100%; margin: 0 0 20px; border-bottom: 1px solid #ebd7b5;">
+            <button class="edit-tab-button active" id="repair-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #f3d28c; border: none; border-bottom: 2px solid #cba96d; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報修內容</button>
+            <button class="edit-tab-button inactive" id="inspection-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">檢測內容</button>
+            <button class="edit-tab-button inactive" id="maintenance-content-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">維修內容</button>
+            <button class="edit-tab-button inactive" id="quotation-process-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;">報價過程</button>
+            <button class="edit-tab-button inactive" id="invoice-tab" style="flex: 1; padding: 8px 5px; font-size: 16px; background-color: transparent; color: #797777; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: border-bottom 0.3s ease, color 0.3s ease;white-space: nowrap;">報價單與發票</button>
+          </div>
+          <h3>可編輯資訊：</h3>
+
+                    <div id="repair-content-section" class="edit-section">
+            <p>報修狀態：
+              <select id="repairStatus" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;">
+                <option value="報修成立">報修成立</option>
+                <option value="已派物流前往取貨">已派物流前往取貨</option>
+                <option value="檢測">檢測</option>
+                <option value="報價">報價</option>
+                <option value="議價">議價</option>
+                <option value="購買新品">購買新品</option>
+                <option value="報廢">報廢</option>
+                <option value="維修中">維修中</option>
+                <option value="送貨">送貨</option>
+                <option value="產品送回">產品送回</option>
+                <option value="結案">結案</option>
+              </select>
+            </p>
+            <p>收貨日：
+              <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>同意議價日：
+              <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p>同意議價時間：
+              <input type="time" id="agreeTime" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:160px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p style="display:flex;align-items:flex-start;">同意議價說明(文字)：
+              <textarea id="agreeNote" placeholder="輸入文字說明" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:250px;min-height:60px;margin-left:10px;font-size:16px;"></textarea>
             </p>
-            <p>收貨日：
-              <input type="date" id="receiveDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p>同意議價日：
-              <input type="date" id="agreeDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p>同意議價時間：
-              <input type="time" id="agreeTime" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:160px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p style="display:flex;align-items:center;">同意議價說明：
-              <input type="file" id="agreeNote" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="agreeNoteFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-            <p>貨物抵達日：
-              <input type="date" id="arrivalDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-            </p>
-          </div>
+            <p style="display:flex;align-items:flex-start;">同意議價說明(檔案)：
+              <div id="agree-section" class="upload-section" style="margin-left:10px;">
+                <input type="file" id="agreeFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />
+                <button type="button" onclick="uploadToDrive(this)">上傳說明檔案</button>
+                <input type="hidden" class="fileIdInput" />
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:300px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+              </div>
+            </p>
+            <div id="agreeNoteFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
+            <p>貨物抵達日：
+              <input type="date" id="arrivalDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+          </div>
 
-          <!-- 第二組：檢測內容 -->
-          <div id="inspection-content-section" class="edit-section" style="display: none;">
-            <p>檢測日：
-              <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
-            </p>
-            <p style="display:flex;align-items:center;">檢測結果：
-              <input type="file" id="testResult" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="testResultFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-          </div>
+                    <div id="inspection-content-section" class="edit-section" style="display: none;">
+            <p>檢測日：
+              <input type="date" id="testDate" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:180px;margin-left:10px;font-size:16px;" />
+            </p>
+            <p style="display:flex;align-items:flex-start;">檢測結果：
+              <textarea id="testResult" placeholder="輸入檢測結果" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:250px;min-height:60px;margin-left:10px;font-size:16px;"></textarea>
+            </p>
+            <div class="upload-section">
+              <p style="margin-bottom: 5px;">上傳檢測內容 (檔案)：</p>
+                <input type="file" id="inspectionFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />             <button type="button" onclick="uploadToDrive(this)">上傳檢測檔案</button>
+                <input type="hidden" class="fileIdInput" />
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+          </div>
 
-          <!-- 第三組：維修內容 -->
-          <div id="maintenance-content-section" class="edit-section" style="display: none;">
-            <p style="display:flex;align-items:center;">維修記錄：
-              <input type="file" id="maintenanceRecord" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="maintenanceRecordFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-          </div>
-
-          <!-- 第四組：報價過程 -->
-          <div id="quotation-process-section" class="edit-section" style="display: none;">
-            <p>運費報價：
-              <input type="number" id="receiveFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>檢測費用：
-              <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>維修工資：
-              <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>清潔費用：
-              <input type="number" id="cleanFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>到府服務費用：
-              <input type="number" id="onsideFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>零件費用：
-              <input type="number" id="partsFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p style="display:flex;align-items:center;">零件明細：
-              <input type="file" id="partsDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="partsDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-            <p>維修總金額：
-              <input type="number" id="totalFee" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>營業稅（5%）：
-              <input type="number" id="businessTax" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:120px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>維修總金額（稅後）：
-              <input type="number" id="totalFeeAfterTax" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>折扣金額：
-              <input type="number" id="discount" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-            <p>實收優惠價：
-              <input type="number" id="totalAmount" placeholder="自動計算" readonly style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
-            </p>
-          </div>
-
-          <!-- 第五組：報價單 -->
-          <div id="quotation-sheet-section" class="edit-section" style="display: none;">
-            <p style="display:flex;align-items:center;">報價單明細：
-              <input type="file" id="quotationDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="quotationDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-          </div>
-
-          <!-- 第六組：發票 -->
-          <div id="invoice-section" class="edit-section" style="display: none;">
-            <p style="display:flex;align-items:center;">發票明細：
-              <input type="file" id="invoiceDetail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" multiple style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:300px;margin-left:10px;font-size:16px;" />
-            </p>
-            <div id="invoiceDetailFiles" style="margin-left:10px;margin-top:5px;font-size:14px;color:#666;"></div>
-          </div>
-
-          <div style="margin-top: 20px;">
-            <button onclick="saveEditableFields()" style="background:#014027;color:#cba96d;border:2px solid #cba96d;padding:10px 20px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:16px;">保存修改</button>
-          </div>
-        </div>
-      `;
-      const newCloseBtn = modal.querySelector('.close-icon');
-      const overlay = document.querySelector('.detail-overlay');
-      newCloseBtn.addEventListener('click', () => {
-        overlay.classList.remove('active');
-        modal.classList.remove('active');
-      });
-
-      const tInput = modal.querySelector('#agreeTime');
-      const tOpen  = modal.querySelector('#agreeTimeOpen');
-      const openTimePicker = () => {
-        if (tInput && typeof tInput.showPicker === 'function') {
-          tInput.showPicker();
-        } else if (tInput) {
-          // 沒有 showPicker 的瀏覽器：至少聚焦，並讓鍵盤上下可調整時間
-          tInput.focus();
-        }
-      };
-      if (tInput) {
-        // 點到欄位就打開
-        tInput.addEventListener('focus', openTimePicker);
-        tInput.addEventListener('click', openTimePicker);
-      }
-      if (tOpen) {
-        // 點「選擇時間」按鈕也打開
-        tOpen.addEventListener('click', openTimePicker);
-      }
-
-      // 重新綁定切換功能
-      const repairContentTab = modal.querySelector("#repair-content-tab");
-      const inspectionContentTab = modal.querySelector("#inspection-content-tab");
-      const maintenanceContentTab = modal.querySelector("#maintenance-content-tab");
-      const quotationProcessTab = modal.querySelector("#quotation-process-tab");
-      const quotationSheetTab = modal.querySelector("#quotation-sheet-tab");
-      const invoiceTab = modal.querySelector("#invoice-tab");
-
-      if (repairContentTab) repairContentTab.addEventListener("click", () => switchEditTab("repair-content"));
-      if (inspectionContentTab) inspectionContentTab.addEventListener("click", () => switchEditTab("inspection-content"));
-      if (maintenanceContentTab) maintenanceContentTab.addEventListener("click", () => switchEditTab("maintenance-content"));
-      if (quotationProcessTab) quotationProcessTab.addEventListener("click", () => switchEditTab("quotation-process"));
-      if (quotationSheetTab) quotationSheetTab.addEventListener("click", () => switchEditTab("quotation-sheet"));
-      if (invoiceTab) invoiceTab.addEventListener("click", () => switchEditTab("invoice"));
-
-      window.currentRecord = record;
-    }
-
-    function loadEditableFields(record) {
-      document.getElementById('repairStatus').value = record.status || '報修成立';
-      document.getElementById('receiveDate').value = record.receiveDate || '';
-      document.getElementById('receiveFee').value = record.receiveFee || '';
-      document.getElementById('arrivalDate').value = record.arrivalDate || '';
-      document.getElementById('testDate').value = record.testDate || '';
-      document.getElementById('testFee').value = record.testFee || '';
-      document.getElementById('testResult').value = record.testResult || '';
-      document.getElementById('repairFee').value = record.repairFee || '';
-      document.getElementById('cleanFee').value = record.cleanFee || '';
-      document.getElementById('onsideFee').value = record.onsideFee || '';
-      document.getElementById('maintenanceRecord').value = record.maintenanceRecord || '';
-      document.getElementById('agreeDate').value = record.agreeDate || '';
-      document.getElementById('agreeTime').value = record.agreeTime || '';
-      document.getElementById('agreeNote').value = record.agreeNote || '';
-      document.getElementById('partsFee').value = record.partsFee || '';
-      document.getElementById('partsDetail').value = record.partsDetail || '';
-      document.getElementById('totalFee').value = record.totalFee || '';
-      document.getElementById('businessTax').value = record.businessTax || '';
-      document.getElementById('totalFeeAfterTax').value = record.totalFeeAfterTax || '';
-      document.getElementById('discount').value = record.discount || '';
-      document.getElementById('totalAmount').value = record.totalAmount || '';
-      document.getElementById('invoiceDate').value = record.invoiceDate || '';
-      document.getElementById('invoiceNumber').value = record.invoiceNumber || '';
-      document.getElementById('invoiceTitle').value = record.invoiceTitle || '';
-      document.getElementById('customerTaxId').value = record.customerTaxId || '';
-    }
-
-    function saveEditableFields() {
-      const repairStatus = document.getElementById('repairStatus').value;
-      const receiveDate = document.getElementById('receiveDate').value;
-      const receiveFee = document.getElementById('receiveFee').value;
-      const arrivalDate = document.getElementById('arrivalDate').value;
-      const testDate = document.getElementById('testDate').value;
-      const testFee = document.getElementById('testFee').value;
-      const testResult = document.getElementById('testResult').value;
-      const repairFee = document.getElementById('repairFee').value;
-      const cleanFee = document.getElementById('cleanFee').value;
-      const onsideFee = document.getElementById('onsideFee').value;
-      const maintenanceRecord = document.getElementById('maintenanceRecord').value;
-      const agreeDate = document.getElementById('agreeDate').value;
-      const agreeTime = document.getElementById('agreeTime').value;
-      const agreeNote = document.getElementById('agreeNote').value;
-      const partsFee = document.getElementById('partsFee').value;
-      const partsDetail = document.getElementById('partsDetail').value;
-      const totalFee = document.getElementById('totalFee').value;
-      const businessTax = document.getElementById('businessTax').value;
-      const totalFeeAfterTax = document.getElementById('totalFeeAfterTax').value;
-      const discount = document.getElementById('discount').value;
-      const totalAmount = document.getElementById('totalAmount').value;
-      const invoiceDate = document.getElementById('invoiceDate').value;
-      const invoiceNumber = document.getElementById('invoiceNumber').value;
-      const invoiceTitle = document.getElementById('invoiceTitle').value;
-      const customerTaxId = document.getElementById('customerTaxId').value;
-
-      if (receiveDate && testDate && new Date(receiveDate) > new Date(testDate)) {
-        alert('收貨日期不能晚於檢測日期！'); return;
-      }
-      if ((receiveFee && receiveFee < 0) || (testFee && testFee < 0) ||
-          (repairFee && repairFee < 0) || (cleanFee && cleanFee < 0) ||
-          (partsFee && partsFee < 0) || (onsideFee && onsideFee < 0) ||
-          (businessTax && businessTax < 0) || (discount && discount < 0)) {
-        alert('費用不能為負數！'); return;
-      }
-
-      const currentRecord = window.currentRecord;
-      const repairId = currentRecord ? currentRecord.repairId : 'Unknown';
-
-      const changes = [];
-      if (repairStatus) changes.push(`報修狀態: ${repairStatus}`);
-      if (receiveDate) changes.push(`收貨日: ${receiveDate}`);
-      if (receiveFee) changes.push(`運費報價: ${receiveFee}元`);
-      if (arrivalDate) changes.push(`貨物抵達日: ${arrivalDate}`);
-      if (testDate) changes.push(`檢測日: ${testDate}`);
-      if (testFee) changes.push(`檢測費用: ${testFee}元`);
-      if (testResult) changes.push(`檢測結果: ${testResult}`);
-      if (repairFee) changes.push(`維修工資: ${repairFee}元`);
-      if (cleanFee) changes.push(`清潔費用: ${cleanFee}元`);
-      if (onsideFee) changes.push(`到府服務費用: ${onsideFee}元`);
-      if (maintenanceRecord) changes.push(`維修記錄: ${maintenanceRecord}`);
-      if (agreeDate) changes.push(`同意議價日: ${agreeDate}`);
-      if (agreeTime) changes.push(`同意議價時間: ${agreeTime}`);
-      if (agreeNote) changes.push(`同意議價說明: ${agreeNote}`);
-      if (partsFee) changes.push(`零件費用: ${partsFee}元`);
-      if (partsDetail) changes.push(`零件明細: ${partsDetail}`);
-      if (totalFee) changes.push(`維修總金額: ${totalFee}元`);
-      if (businessTax) changes.push(`營業稅（5%）: ${businessTax}元`);
-      if (totalFeeAfterTax) changes.push(`維修總金額（稅後）: ${totalFeeAfterTax}元`);
-      if (discount) changes.push(`折扣金額: ${discount}元`);
-      if (totalAmount) changes.push(`實收優惠價: ${totalAmount}元`);
-      if (invoiceDate) changes.push(`發票日期: ${invoiceDate}`);
-      if (invoiceNumber) changes.push(`號碼: ${invoiceNumber}`);
-      if (invoiceTitle) changes.push(`抬頭: ${invoiceTitle}`);
-      if (customerTaxId) changes.push(`客戶方統編: ${customerTaxId}`);
-
-      if (changes.length > 0) {
-        alert(`維修單號 ${repairId} 已保存以下修改：\n` + changes.join('\n'));
-        if (currentRecord) {
-          currentRecord.status = repairStatus;
-          currentRecord.receiveDate = receiveDate;
-          currentRecord.receiveFee = receiveFee;
-          currentRecord.arrivalDate = arrivalDate;
-          currentRecord.testDate = testDate;
-          currentRecord.testFee = testFee;
-          currentRecord.testResult = testResult;
-          currentRecord.repairFee = repairFee;
-          currentRecord.cleanFee = cleanFee;
-          currentRecord.onsideFee = onsideFee;
-          currentRecord.maintenanceRecord = maintenanceRecord;
-          currentRecord.agreeDate = agreeDate;
-          currentRecord.agreeTime = agreeTime;
-          currentRecord.agreeNote = agreeNote;
-          currentRecord.partsFee = partsFee;
-          currentRecord.partsDetail = partsDetail;
-          currentRecord.totalFee = totalFee;
-          currentRecord.businessTax = businessTax;
-          currentRecord.totalFeeAfterTax = totalFeeAfterTax;
-          currentRecord.discount = discount;
-          currentRecord.totalAmount = totalAmount;
-          currentRecord.invoiceDate = invoiceDate;
-          currentRecord.invoiceNumber = invoiceNumber;
-          currentRecord.invoiceTitle = invoiceTitle;
-          currentRecord.customerTaxId = customerTaxId;
-        }
-      } else {
-        alert('請至少填寫一個欄位！');
-      }
-    }
-  </script>
-</body>
-</html>
+                    <div id="maintenance-content-section" class="edit-section" style="display: none;">
+            <p style="display:flex;align-items:flex-start;">維修記錄：
+              <textarea id="maintenanceRecord" placeholder="輸入維修記錄" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:250px;min-height:60px;margin-left:10px;font-size:16px;"></textarea>
+            </p>
+            <div class="upload-section">
+              <p style="margin-bottom: 5px;">上傳維修內容 (檔案)：</p>
+                <input type="file" id="maintenanceFile" accept=".pdf,.jpg,.png,.docx,.xlsx" />             <button type="button" onclick="uploadToDrive(this)">上傳維修檔案</button>
+                <input type="hidden" class="fileIdInput" />
+                <div class="fileResult"></div>
+                <img class="previewImg" alt="預覽" style="display:none; max-width:400px; margin-top:10px;" />
+                <div class="previewPdfContainer" style="display:none; margin-top:10px;"></div>
+            </div>
+          </div>
+          
+                    <div id="quotation-process-section" class="edit-section" style="display: none;">
+            <p>運費報價：
+              <input type="number" id="receiveFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>檢測費用：
+              <input type="number" id="testFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4px;width:150px;margin-left:10px;font-size:16px;" /> 元
+            </p>
+            <p>維修工資：
+              <input type="number" id="repairFee" placeholder="輸入金額" oninput="autoCalculateTotalFee()" style="background:#ffffff;color:#000;border:1px solid #cba96d;padding:8px 12px;border-radius:4
