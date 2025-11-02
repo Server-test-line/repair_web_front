@@ -1,4 +1,6 @@
-/* 搜尋區塊 */
+/* =========================
+   搜尋與結果區塊
+   ========================= */
 .account-bar {
   display: flex;
   justify-content: space-between;
@@ -9,6 +11,7 @@
   color: #ebd7b5;
   font-size: 16px;
 }
+
 .search-panel {
   max-width: 600px;
   margin: 40px auto;
@@ -26,14 +29,15 @@
 }
 .btn-group { display: flex; justify-content: space-between; margin-top: 20px; }
 
-/* 查詢結果區 */
 .result-box {
   max-width: 800px; margin: 40px auto; background-color: #012215;
   border: 2px solid #cba96d; border-radius: 10px; color: #ebd7b5; padding: 20px;
 }
 .result-box p { margin: 14px 0; line-height: 1.2; }
 
-/* 卡片 & 版面（若缺少時補齊） */
+/* =========================
+   卡片與版面
+   ========================= */
 .record-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 20px; }
 .info-box {
   background-color: #014027; border: 2px solid #cba96d; border-radius: 10px;
@@ -47,7 +51,7 @@
 .submit-button:hover { background: #cba96d; color: #014027; }
 
 /* =========================
-   三行進度條樣式
+   三行進度條
    ========================= */
 .three-track-progress {
   display: grid;
@@ -57,41 +61,29 @@
   border: 2px solid #cba96d;
   border-radius: 12px;
   background: #014027;
+
+  --dot: 50px;
+  --line: 3px;
+  --gap: 10px;
+  --accent: #cba96d;
+  --arrowW: 10px;
+  --arrowH: 6px;
+
+  --vGapFinal: 38px;
 }
 
-/* 主流程（上排 1~5） */
-.track.main {
+/* 流程列 */
+.track.main, .track.branch, .track.final, .track.close {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  gap: var(--gap);
   position: relative;
 }
+.track.main  { grid-template-columns: repeat(5, 1fr); }
+.track.branch { grid-template-columns: repeat(3, 1fr); }
+.track.final  { grid-template-columns: repeat(3, 1fr); }
+.track.close  { grid-template-columns: repeat(3, 1fr); }
 
-/* 分支流程（中排：三選一，數字固定 6） */
-.track.branch {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  position: relative;
-}
-
-/* 最終流程（下排：第三排放送貨和產品送回） */
-.track.final {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  position: relative;
-}
-
-/* 結案流程（第四排：只在中間放結案） */
-.track.close {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  position: relative;
-}
-
-/* 節點共用 */
+/* 節點 */
 .node {
   display: grid;
   justify-items: center;
@@ -100,144 +92,199 @@
   text-align: center;
 }
 .dot {
-  width: 50px; height: 50px; border-radius: 50%;
-  border: 3px solid #cba96d; background: #014027; color: #cba96d;
+  width: var(--dot); height: var(--dot); border-radius: 50%;
+  border: 3px solid var(--accent); background: #014027; color: var(--accent);
   display: grid; place-items: center; font-weight: bold; font-size: 16px;
   z-index: 2; transition: 0.2s;
 }
-.label { font-size: 14px; color: #ebd7b5; }
+.label { font-size: 14px; color: #ebd7b5; position: relative; }
 
-/* 狀態顏色 */
+/* 狀態 */
 .node.completed .dot { background: #28a745; border-color: #28a745; color: #fff; }
 .node.active .dot { background: #cba96d; color: #014027; box-shadow: 0 0 10px rgba(203,169,109,0.6); }
 
-/* 主線連接線（水平） */
-.track.main .node::before,
-.track.main .node::after {
+/* =========================
+   水平箭頭（主流程 & 分支）
+   ========================= */
+.track.main .node:not(:last-child)::after,
+.track.branch .node:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 25px;
-  height: 3px;
-  background: #cba96d;
-  opacity: 0.4;
-  width: calc(50% - 25px);
-  z-index: 1;
+  top: 50%; transform: translateY(-50%);
+  left: calc(50% + var(--dot)/2);
+  width: calc(100% + var(--gap) - var(--dot));
+  height: var(--line);
+  background: var(--accent);
 }
-.track.main .node::before { left: -4px; transform: translateX(-100%); }
-.track.main .node::after  { right: -4px; transform: translateX(100%); }
-.track.main .node:first-child::before,
-.track.main .node:last-child::after { display: none; }
 
-/* 中排分支（水平線淡一點） */
-.track.branch .node::before,
-.track.branch .node::after {
+/* 僅主流程加箭頭尖端 */
+.track.main .node:not(:last-child)::before {
   content: "";
   position: absolute;
-  top: 25px;
-  height: 3px;
-  background: #cba96d;
-  opacity: 0.3;
-  width: calc(50% - 25px);
+  top: 50%; transform: translateY(-50%);
+  left: calc(100% + var(--gap) - var(--dot) + 50% + var(--dot)/2);
+  width: 0; height: 0;
+  border-top: var(--arrowH) solid transparent;
+  border-bottom: var(--arrowH) solid transparent;
+  border-left: var(--arrowW) solid var(--accent);
 }
-.track.branch .node::before { left: -4px; transform: translateX(-100%); }
-.track.branch .node::after  { right: -4px; transform: translateX(100%); }
-.track.branch .node:first-child::before,
-.track.branch .node:last-child::after { display: none; }
 
-/* 上排 → 中排：置中垂直連接（裝飾用，可留可去） */
-.branch-connector {
-  position: relative;
-  height: 10px;
+/* =========================
+   垂直箭頭（分支三欄 → 第三列）
+   ========================= */
+.track.branch .node:nth-child(2) .label::after{
+  content: "";
+  position: absolute;
+  left: calc(50% - var(--line)/2);
+  top: calc(100% + 6px);
+  width: var(--line);
+  height: calc(var(--vGapFinal) - var(--arrowH));
+  background: var(--accent);
 }
+.track.branch .node:nth-child(2) .label::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - var(--arrowW)/2);
+  top: calc(100% + 6px + var(--vGapFinal) - var(--arrowH));
+  width: 0; height: 0;
+  border-left: calc(var(--arrowW)/2) solid transparent;
+  border-right: calc(var(--arrowW)/2) solid transparent;
+  border-top: var(--arrowH) solid var(--accent);
+}
+
+/* =========================
+   第三排（7 ↔ 7）單一底線 + 右端箭頭
+   ========================= */
+.track.final .node::before,
+.track.final .node::after { display: none; }
+.track.final { --cell: calc((100% - (2 * var(--gap))) / 3); }
+.track.final::before {
+  content: "";
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  left: calc(var(--cell)/2 + var(--dot)/2);
+  width: calc((2 * var(--cell)) + (2 * var(--gap)) - var(--dot));
+  height: var(--line);
+  background: var(--accent);
+}
+
+/* =========================
+   垂直箭頭（主→分支、第三排→結案）
+   ========================= */
+.branch-connector { position: relative; height: 20px; }
 .branch-connector::before {
   content: "";
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3px;
-  height: 12px;
-  background: #cba96d;
-  opacity: 0.6;
+  left: calc(50% - var(--line)/2);
+  top: 0;
+  width: var(--line);
+  height: calc(100% - var(--arrowH));
+  background: var(--accent);
 }
-
-/* 第三排完整水平連接線（送貨 ↔ 產品送回） */
-.track.final::after {
+.branch-connector::after {
   content: "";
   position: absolute;
-  top: 25px;
-  left: calc(16.67% + 25px); /* 從第一個節點的右邊開始 */
-  right: calc(16.67% + 25px); /* 到第三個節點的左邊結束 */
-  height: 3px;
-  background: #cba96d;
-  opacity: 0.3;
-  z-index: 1;
+  left: calc(50% - var(--arrowW)/2);
+  bottom: 0;
+  width: 0; height: 0;
+  border-left: calc(var(--arrowW)/2) solid transparent;
+  border-right: calc(var(--arrowW)/2) solid transparent;
+  border-top: var(--arrowH) solid var(--accent);
 }
 
-/* 第三排垂直連接線（購買新品 → 送貨，維修中 → 產品送回） */
-.track.final .node:nth-child(1)::before,
-.track.final .node.is-final::before {
-  content: "";
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3px;
-  height: 12px;
-  background: #cba96d;
-  opacity: 0.6;
-  z-index: 2;
-}
-
-/* 報廢節點下方延伸到第三排的垂直線 - 使用label避免影響水平線 */
-.track.branch .node:nth-child(2) .label::after {
-  content: "";
-  position: absolute;
-  top: 70px; /* 從label下方開始 */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3px;
-  height: 55px; /* 延伸到第三排水平線 */
-  background: #cba96d;
-  opacity: 0.6;
-  z-index: 3; /* 確保顯示在上層 */
-}
-
-/* 第三排到第四排之間的連接器 */
-.final-to-close-connector {
-  position: relative;
-  height: 10px;
-}
-
-/* 從第三排水平線到結案的完整垂直連接線 */
+.final-to-close-connector { position: relative; height: 60px; }
 .final-to-close-connector::before {
   content: "";
   position: absolute;
-  left: 50%;
-  top: -48px; /* 從第三排的水平線位置開始 */
-  transform: translateX(-50%);
-  width: 3px;
-  height: 60px; /* 延伸到結案節點 */
-  background: #cba96d;
-  opacity: 0.6;
-  z-index: 3;
+  left: calc(50% - var(--line)/2);
+  top: 0;
+  width: var(--line);
+  height: calc(100% - var(--arrowH));
+  background: var(--accent);
+}
+.final-to-close-connector::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - var(--arrowW)/2);
+  bottom: 0;
+  width: 0; height: 0;
+  border-left: calc(var(--arrowW)/2) solid transparent;
+  border-right: calc(var(--arrowW)/2) solid transparent;
+  border-top: var(--arrowH) solid var(--accent);
 }
 
-/* 空白占位（用來對齊，無任何顯示） */
+/* =========================
+   ✅ 去除圈起的三個箭頭：購買新品、維修中、送貨線末端
+   ========================= */
+.track.branch .node:nth-child(1)::before,
+.track.branch .node:nth-child(1)::after,
+.track.branch .node:nth-child(3)::before,
+.track.branch .node:nth-child(3)::after,
+.track.final::after {
+  display: none !important;
+}
+
+/* 空白節點 */
 .node.spacer .dot,
 .node.spacer .label { visibility: hidden; }
-
-/* spacer 節點的偽元素預設隱藏 */
 .node.spacer::before,
 .node.spacer::after { visibility: hidden; }
 
+/* =========================
+   去除圈起箭頭但保留線條的完整版本
+   ========================= */
 
-/* RWD */
+/* 購買新品 → 報廢：保留線條、去除箭頭 */
+.track.branch .node:nth-child(1)::after {
+  display: block !important;
+}
+.track.branch .node:nth-child(1)::before {
+  display: none !important;
+}
+
+/* 維修中 → 維修中：保留線條、去除箭頭 */
+.track.branch .node:nth-child(3)::after {
+  display: block !important;
+}
+.track.branch .node:nth-child(3)::before {
+  display: none !important;
+}
+
+/* 送貨 → 產品送回：保留線條、去除箭頭 */
+.track.final::before {
+  display: block !important;
+}
+.track.final::after {
+  display: none !important;
+}
+
+/* 若要報廢往下垂直線也無箭頭，加入以下（可選） */
+.track.branch .node:nth-child(2) .label::before {
+  display: none !important;
+}
+
+
+/* =========================
+   RWD
+   ========================= */
 @media (max-width: 768px) {
   .dot { width: 44px; height: 44px; font-size: 14px; }
   .label { font-size: 12px; }
   .info-box { width: 100%; padding: 20px; font-size: 18px; }
+  .three-track-progress {
+    --dot: 44px;
+    --arrowW: 10px;
+    --arrowH: 6px;
+    --vGapFinal: 34px;
+  }
 }
 @media (max-width: 480px) {
   .dot { width: 40px; height: 40px; font-size: 13px; }
   .label { font-size: 11px; }
+  .three-track-progress {
+    --dot: 40px;
+    --arrowW: 10px;
+    --arrowH: 6px;
+    --vGapFinal: 30px;
+  }
 }
